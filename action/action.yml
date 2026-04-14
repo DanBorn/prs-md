@@ -1,0 +1,31 @@
+name: "PRs.md Turing Test"
+description: "Verify PR authors understand their code changes before merging"
+
+inputs:
+  prs-api-key:
+    description: "LLM API key (OpenAI, Anthropic, or Gemini)"
+    required: true
+  prs-provider:
+    description: 'LLM provider: "openai", "anthropic", or "gemini"'
+    required: true
+    default: "openai"
+  prs-callback-token:
+    description: "GitHub PAT for callback (fine-grained, contents:write on this repo)"
+    required: true
+  prs-server-url:
+    description: "PRs.md server URL"
+    required: false
+    default: "https://prs.md"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run PRs.md Action
+      shell: bash
+      run: node "${{ github.action_path }}/src/index.mjs"
+      env:
+        PRS_API_KEY: ${{ inputs.prs-api-key }}
+        PRS_PROVIDER: ${{ inputs.prs-provider }}
+        PRS_CALLBACK_TOKEN: ${{ inputs.prs-callback-token }}
+        PRS_SERVER_URL: ${{ inputs.prs-server-url }}
+        GITHUB_TOKEN: ${{ github.token }}

@@ -1,26 +1,475 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Dark editorial palette */
+  --color-bg: oklch(13% 0.01 260);
+  --color-surface: oklch(17% 0.01 260);
+  --color-surface-raised: oklch(20% 0.012 260);
+  --color-text: oklch(93% 0.005 260);
+  --color-text-muted: oklch(60% 0.01 260);
+  --color-text-dim: oklch(45% 0.01 260);
+  --color-border: oklch(25% 0.01 260);
+  --color-border-subtle: oklch(22% 0.008 260);
+
+  /* Neon green for verified/success — the hero accent */
+  --color-neon: oklch(82% 0.22 145);
+  --color-neon-dim: oklch(65% 0.18 145);
+  --color-neon-glow: oklch(82% 0.22 145 / 0.15);
+
+  /* Accent purple for interactive elements */
+  --color-accent: oklch(70% 0.2 280);
+  --color-accent-hover: oklch(75% 0.22 280);
+  --color-accent-dim: oklch(70% 0.2 280 / 0.12);
+
+  /* Status */
+  --color-danger: oklch(65% 0.22 25);
+  --color-warning: oklch(78% 0.16 70);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --shadow-glow-neon: 0 0 20px oklch(82% 0.22 145 / 0.15), 0 0 60px oklch(82% 0.22 145 / 0.05);
+  --shadow-glow-accent: 0 0 20px oklch(70% 0.2 280 / 0.2), 0 0 60px oklch(70% 0.2 280 / 0.06);
+  --shadow-elevated: 0 8px 32px oklch(0% 0 0 / 0.4), 0 2px 8px oklch(0% 0 0 / 0.3);
+  --shadow-card: 0 2px 12px oklch(0% 0 0 / 0.3), 0 1px 3px oklch(0% 0 0 / 0.2);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Noise texture overlay */
+.noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Disable copy-paste in quiz answer boxes */
+.no-copy-paste {
+  -webkit-user-select: none;
+  user-select: none;
+}
+.no-copy-paste textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Glow pulse animation */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Scan line effect for quiz timer */
+@keyframes scan {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(100%); }
+}
+
+/* Typing cursor blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.cursor-blink::after {
+  content: "▌";
+  animation: blink 1s step-end infinite;
+  color: var(--color-neon);
+}
+
+/* Header nav link */
+.nav-link {
+  color: var(--color-text-dim);
+}
+.nav-link:hover {
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+/* Donate link */
+.donate-link {
+  color: oklch(70% 0.15 30);
+}
+.donate-link:hover {
+  color: oklch(80% 0.18 30);
+  background: oklch(70% 0.15 30 / 0.1);
+}
+
+/* User pill */
+.user-pill {
+  background: transparent;
+}
+.user-pill:hover {
+  background: var(--color-surface);
+}
+
+/* Dropdown menu items */
+.menu-item {
+  color: var(--color-text-muted);
+}
+.menu-item:hover {
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+}
+
+/* Sidebar nav item */
+.sidebar-item {
+  color: var(--color-text-muted);
+  background: transparent;
+}
+.sidebar-item:hover {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+.sidebar-item[data-active="true"] {
+  color: var(--color-neon);
+  background: var(--color-neon-glow);
+}
+.sidebar-item[data-active="true"]:hover {
+  background: var(--color-neon-glow) !important;
+  color: var(--color-neon) !important;
+}
+
+/* Breadcrumb links */
+.breadcrumb-link {
+  color: var(--color-text-dim);
+}
+.breadcrumb-link:hover {
+  color: var(--color-neon);
+}
+
+/* Badge shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Global keyboard focus ring ── */
+:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.55);
+  outline-offset: 2px;
+}
+
+/* ── Focus additions to existing nav classes ── */
+.nav-link:focus-visible,
+.donate-link:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.45);
+  outline-offset: 2px;
+}
+.user-pill:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.4);
+  outline-offset: 3px;
+}
+.menu-item:focus-visible {
+  outline: none;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+.sidebar-item:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.4);
+  outline-offset: -1px;
+}
+.sidebar-item:active {
+  transform: scale(0.97);
+}
+
+/* ── Primary action button (neon fill) ── */
+.btn-primary {
+  background: var(--color-neon);
+  color: var(--color-bg);
+  box-shadow: var(--shadow-glow-neon);
+  cursor: pointer;
+}
+.btn-primary:hover:not(:disabled) {
+  background: oklch(87% 0.24 145);
+  box-shadow: 0 0 28px oklch(82% 0.22 145 / 0.28), 0 0 80px oklch(82% 0.22 145 / 0.1);
+  transform: translateY(-1px);
+}
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 0 10px oklch(82% 0.22 145 / 0.12);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.btn-primary:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.7);
+  outline-offset: 3px;
+}
+
+/* ── Secondary button (surface-raised bg + neon text) ── */
+.btn-secondary {
+  background: var(--color-surface-raised);
+  color: var(--color-neon);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+}
+.btn-secondary:hover:not(:disabled) {
+  background: oklch(24% 0.014 260);
+  border-color: oklch(82% 0.22 145 / 0.3);
+  color: oklch(87% 0.24 145);
+}
+.btn-secondary:active:not(:disabled) {
+  transform: scale(0.97);
+  background: var(--color-surface-raised);
+}
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-secondary:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.5);
+  outline-offset: 2px;
+}
+
+/* ── Outline-only button (landing page secondary) ── */
+.btn-outline {
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.btn-outline:hover:not(:disabled) {
+  border-color: var(--color-text-dim);
+  color: var(--color-text);
+  background: oklch(17% 0.01 260 / 0.5);
+}
+.btn-outline:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.btn-outline:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.4);
+  outline-offset: 2px;
+}
+
+/* ── Danger text button (remove, revoke) ── */
+.btn-danger {
+  color: var(--color-danger);
+  cursor: pointer;
+}
+.btn-danger:hover:not(:disabled) {
+  color: oklch(72% 0.24 25);
+  background: oklch(65% 0.22 25 / 0.1);
+}
+.btn-danger:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-danger:focus-visible {
+  outline: 2px solid oklch(65% 0.22 25 / 0.5);
+  outline-offset: 2px;
+}
+
+/* ── Neon text inline button ── */
+.btn-neon-text {
+  color: var(--color-neon);
+  cursor: pointer;
+}
+.btn-neon-text:hover:not(:disabled) {
+  color: oklch(87% 0.24 145);
+  text-shadow: 0 0 8px oklch(82% 0.22 145 / 0.3);
+}
+.btn-neon-text:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.5);
+  outline-offset: 2px;
+}
+
+/* ── Tab-style selector button ── */
+.tab-btn {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-dim);
+  cursor: pointer;
+}
+.tab-btn:hover:not(:disabled) {
+  border-color: oklch(82% 0.22 145 / 0.2);
+  background: oklch(82% 0.22 145 / 0.04);
+  color: var(--color-text-muted);
+}
+.tab-btn[data-active="true"] {
+  border-color: oklch(82% 0.22 145 / 0.3);
+  background: var(--color-neon-glow);
+  color: var(--color-neon);
+}
+.tab-btn[data-active="true"]:hover {
+  border-color: oklch(82% 0.22 145 / 0.45);
+  background: oklch(82% 0.22 145 / 0.18);
+}
+.tab-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+.tab-btn:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.5);
+  outline-offset: 2px;
+}
+
+/* ── Input and textarea fields ── */
+.input-field {
+  border-color: var(--color-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+.input-field::placeholder {
+  color: var(--color-text-dim);
+}
+.input-field:hover {
+  border-color: oklch(30% 0.01 260);
+}
+.input-field:focus {
+  outline: none;
+  border-color: oklch(65% 0.18 145);
+  box-shadow: 0 0 0 3px oklch(82% 0.22 145 / 0.08);
+}
+.input-field:focus-visible {
+  outline: none;
+}
+
+/* ── Challenge list link card ── */
+.challenge-item {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+.challenge-item:hover {
+  border-color: var(--color-neon-dim);
+  background: oklch(18% 0.012 260);
+}
+.challenge-item:active {
+  transform: scale(0.99);
+}
+.challenge-item:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.5);
+  outline-offset: 2px;
+}
+
+/* ── Inline text links ── */
+.link-accent {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+.link-accent:hover {
+  color: var(--color-accent-hover);
+}
+.link-accent:focus-visible {
+  outline: 2px solid oklch(70% 0.2 280 / 0.5);
+  outline-offset: 1px;
+}
+.link-neon {
+  color: var(--color-neon);
+  text-decoration: underline;
+}
+.link-neon:hover {
+  color: oklch(87% 0.24 145);
+}
+.link-neon:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.5);
+  outline-offset: 1px;
+}
+.link-dim {
+  color: var(--color-text-dim);
+}
+.link-dim:hover {
+  color: var(--color-text);
+}
+.link-dim:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.4);
+  outline-offset: 1px;
+}
+
+/* ── Copy badge button (proof page) ── */
+.copy-badge-btn {
+  background: var(--color-surface-raised);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+}
+.copy-badge-btn:hover:not(:disabled) {
+  background: oklch(24% 0.014 260);
+  border-color: oklch(82% 0.22 145 / 0.25);
+  color: var(--color-neon);
+}
+.copy-badge-btn[data-copied="true"] {
+  background: var(--color-neon-glow);
+  color: var(--color-neon);
+  border-color: oklch(82% 0.22 145 / 0.3);
+}
+.copy-badge-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.copy-badge-btn:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.5);
+  outline-offset: 2px;
+}
+
+/* ── MCP mode selector buttons ── */
+.mcp-mode-btn {
+  cursor: pointer;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+}
+.mcp-mode-btn:not([data-active]):hover,
+.mcp-mode-btn[data-active=""]:hover {
+  background: oklch(22% 0.012 260);
+  border-color: oklch(30% 0.01 260);
+}
+.mcp-mode-btn[data-active="token"] {
+  background: oklch(82% 0.22 145 / 0.06);
+  border-color: oklch(82% 0.22 145 / 0.3);
+}
+.mcp-mode-btn[data-active="byok"] {
+  background: oklch(70% 0.2 280 / 0.06);
+  border-color: oklch(70% 0.2 280 / 0.3);
+}
+.mcp-mode-btn[data-active="piggyback"] {
+  background: oklch(60% 0.15 260 / 0.06);
+  border-color: oklch(60% 0.15 260 / 0.3);
+}
+.mcp-mode-btn:active {
+  transform: scale(0.97);
+}
+.mcp-mode-btn:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.5);
+  outline-offset: 2px;
+}
+
+/* ── Code block copy button ── */
+.code-copy-btn {
+  border-color: var(--color-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text-dim);
+  cursor: pointer;
+}
+.code-copy-btn:hover {
+  background: oklch(24% 0.014 260);
+  border-color: oklch(82% 0.22 145 / 0.2);
+  color: var(--color-text);
+}
+.code-copy-btn[data-copied="true"] {
+  color: var(--color-neon);
+}
+.code-copy-btn:focus-visible {
+  outline: 2px solid oklch(82% 0.22 145 / 0.5);
+  outline-offset: 2px;
 }

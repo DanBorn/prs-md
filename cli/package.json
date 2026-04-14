@@ -1,0 +1,30 @@
+{
+  "name": "prs-md",
+  "version": "0.1.0",
+  "description": "Turing Test for Pull Requests — prove you wrote your own code",
+  "type": "module",
+  "bin": {
+    "prs-md": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/index.ts"
+  },
+  "keywords": [
+    "github",
+    "pull-request",
+    "code-review",
+    "ai",
+    "turing-test",
+    "cli"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}

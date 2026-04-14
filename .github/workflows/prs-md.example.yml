@@ -1,0 +1,52 @@
+# PRs.md — Turing Test for Pull Requests
+#
+# Verifies PR authors understand their code changes by generating
+# a timed quiz from the diff and grading answers via LLM.
+#
+# Required secrets:
+#   PRS_API_KEY          — LLM API key (OpenAI, Anthropic, or Gemini)
+#   PRS_PROVIDER         — "openai", "anthropic", or "gemini"
+#   PRS_CALLBACK_TOKEN   — GitHub fine-grained PAT (contents:write on this repo)
+#                          Needed so prs.md can trigger the grading workflow
+#                          after the quiz is submitted.
+#
+# How to create PRS_CALLBACK_TOKEN:
+#   1. Go to github.com/settings/personal-access-tokens/new
+#   2. Select "Fine-grained token"
+#   3. Repository access → "Only select repositories" → pick this repo
+#   4. Permissions → Repository → Contents → Read and write
+#   5. Generate → copy → add as repo secret PRS_CALLBACK_TOKEN
+
+name: "PRs.md Turing Test"
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  repository_dispatch:
+    types: [prs-md-quiz-submitted]
+
+# Cancel in-progress runs for the same PR (generation only)
+concurrency:
+  group: prs-md-${{ github.event.pull_request.number || github.event.client_payload.prNumber }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  statuses: write
+  pull-requests: write
+
+jobs:
+  prs-md:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (for local action)
+        uses: actions/checkout@v4
+
+      - name: Run PRs.md
+        uses: ./action
+        # For published action, replace with:
+        # uses: prs-md/action@v1
+        with:
+          prs-api-key: ${{ secrets.PRS_API_KEY }}
+          prs-provider: ${{ secrets.PRS_PROVIDER }}
+          prs-callback-token: ${{ secrets.PRS_CALLBACK_TOKEN }}
+          # prs-server-url: https://prs.md  # default
