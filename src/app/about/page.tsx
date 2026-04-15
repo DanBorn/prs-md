@@ -77,7 +77,7 @@ export default function AboutPage() {
   return (
     <div className="flex flex-col">
       {/* ─── HERO ─── */}
-      <section className="border-b px-4 py-20" style={{ borderColor: "var(--color-border-subtle)" }}>
+      <section className="border-b px-4 py-12 sm:py-20" style={{ borderColor: "var(--color-border-subtle)" }}>
         <div className="mx-auto max-w-2xl">
           <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "var(--color-neon)" }}>
             About
@@ -95,7 +95,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── WHAT IT IS ─── */}
-      <section className="border-b px-4 py-20" style={{ borderColor: "var(--color-border-subtle)" }}>
+      <section className="border-b px-4 py-12 sm:py-20" style={{ borderColor: "var(--color-border-subtle)" }}>
         <div className="mx-auto max-w-2xl">
           <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "var(--color-text-dim)" }}>
             What it is
@@ -123,12 +123,12 @@ export default function AboutPage() {
       </section>
 
       {/* ─── HOW IT WORKS ─── */}
-      <section className="border-b px-4 py-20" style={{ borderColor: "var(--color-border-subtle)" }}>
+      <section className="border-b px-4 py-12 sm:py-20" style={{ borderColor: "var(--color-border-subtle)" }}>
         <div className="mx-auto max-w-3xl">
           <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "var(--color-text-dim)" }}>
             How it works
           </p>
-          <h2 className="text-2xl font-bold tracking-tight mb-10" style={{ letterSpacing: "-0.02em" }}>
+          <h2 className="text-2xl font-bold tracking-tight mb-6 sm:mb-10" style={{ letterSpacing: "-0.02em" }}>
             Under the hood
           </h2>
 
@@ -162,7 +162,7 @@ export default function AboutPage() {
             ].map((item) => (
               <div
                 key={item.step}
-                className="flex gap-6 p-6 sm:p-8"
+                className="flex gap-4 p-4 sm:gap-6 sm:p-8"
                 style={{ background: "var(--color-surface)" }}
               >
                 <span
@@ -184,12 +184,12 @@ export default function AboutPage() {
       </section>
 
       {/* ─── PRINCIPLES ─── */}
-      <section className="border-b px-4 py-20" style={{ borderColor: "var(--color-border-subtle)" }}>
+      <section className="border-b px-4 py-12 sm:py-20" style={{ borderColor: "var(--color-border-subtle)" }}>
         <div className="mx-auto max-w-2xl">
           <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "var(--color-text-dim)" }}>
             Principles
           </p>
-          <h2 className="text-2xl font-bold tracking-tight mb-10" style={{ letterSpacing: "-0.02em" }}>
+          <h2 className="text-2xl font-bold tracking-tight mb-6 sm:mb-10" style={{ letterSpacing: "-0.02em" }}>
             Built on a few firm opinions
           </h2>
 
@@ -214,7 +214,7 @@ export default function AboutPage() {
             ].map((item) => (
               <div
                 key={item.title}
-                className="rounded-xl border p-5"
+                className="rounded-xl border p-4 sm:p-5"
                 style={{
                   borderColor: "var(--color-border)",
                   background: "var(--color-surface)",
@@ -231,12 +231,12 @@ export default function AboutPage() {
       </section>
 
       {/* ─── FAQ ─── */}
-      <section className="border-b px-4 py-20" style={{ borderColor: "var(--color-border-subtle)" }}>
+      <section className="border-b px-4 py-12 sm:py-20" style={{ borderColor: "var(--color-border-subtle)" }}>
         <div className="mx-auto max-w-2xl">
           <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "var(--color-text-dim)" }}>
             FAQ
           </p>
-          <h2 className="text-2xl font-bold tracking-tight mb-10" style={{ letterSpacing: "-0.02em" }}>
+          <h2 className="text-2xl font-bold tracking-tight mb-6 sm:mb-10" style={{ letterSpacing: "-0.02em" }}>
             Common questions
           </h2>
 
@@ -244,7 +244,7 @@ export default function AboutPage() {
             {FAQ.map((item) => (
               <div
                 key={item.q}
-                className="p-6"
+                className="p-4 sm:p-6"
                 style={{ background: "var(--color-surface)" }}
               >
                 <p className="text-sm font-semibold mb-2">{item.q}</p>
@@ -258,7 +258,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── CTA ─── */}
-      <section className="px-4 py-20">
+      <section className="px-4 py-12 sm:py-20">
         <div className="mx-auto max-w-xl text-center">
           <h2 className="text-2xl font-bold tracking-tight mb-3">
             Read the guide or just try it
@@ -269,13 +269,13 @@ export default function AboutPage() {
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
               href="/docs"
-              className="btn-outline rounded-lg px-6 py-3 font-mono text-sm font-medium transition-all"
+              className="btn-outline w-full sm:w-auto rounded-lg px-6 py-3 font-mono text-sm font-medium transition-all text-center"
             >
               Read the docs
             </Link>
             <Link
               href="/dashboard"
-              className="btn-primary rounded-lg px-6 py-3 font-mono text-sm font-bold transition-all"
+              className="btn-primary w-full sm:w-auto rounded-lg px-6 py-3 font-mono text-sm font-bold transition-all text-center"
             >
               Go to dashboard &rarr;
             </Link>
