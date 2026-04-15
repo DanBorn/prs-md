@@ -92,7 +92,7 @@ export async function deviceFlowLogin(): Promise<AuthData> {
   };
 
   // Return the code info — caller handles display + polling
-  const { device_code, user_code, verification_uri, interval } = codeData;
+  const { device_code, interval } = codeData;
 
   // Step 2: Poll for token
   const pollInterval = (interval ?? 5) * 1000;

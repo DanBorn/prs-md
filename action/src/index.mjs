@@ -121,7 +121,6 @@ async function handleDispatch() {
     prNumber,
     answers,
     questions,
-    timeSpentSeconds,
     quizUserGithub,
   } = payload;
 

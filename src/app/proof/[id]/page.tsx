@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { db } from "@/db";
 import { attempts, challenges, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -116,9 +117,11 @@ export default async function ProofPage({ params }: Props) {
           <div className="relative z-10 flex items-start justify-between">
             <div className="flex items-center gap-3">
               {user?.image && (
-                <img
+                <Image
                   src={user.image}
                   alt=""
+                  width={48}
+                  height={48}
                   className="h-12 w-12 rounded-full"
                   style={{ outline: "2px solid oklch(82% 0.22 145 / 0.3)", outlineOffset: "2px" }}
                 />

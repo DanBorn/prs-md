@@ -32,7 +32,7 @@ const ENCRYPTION_KEY_B64 = Buffer.alloc(32).toString("base64");
 process.env.ENCRYPTION_KEY = ENCRYPTION_KEY_B64;
 
 const TOKEN = generateToken();
-const TOKEN_HASH = hashToken(TOKEN);
+hashToken(TOKEN); // pre-hash to verify the function runs without error
 const ENCRYPTED_KEY = encrypt("sk-test-decrypted-key");
 
 /** Build a Drizzle-style chainable select stub that resolves to `rows`. */

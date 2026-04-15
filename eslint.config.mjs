@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated / compiled output — never lint these
+    "mcp/dist/**",
+    "action/dist/**",
+    "coverage/**",
   ]),
 ]);
 

@@ -2,7 +2,7 @@
 
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Logo, LogoMark } from "@/components/logo";
+import { LogoMark } from "@/components/logo";
 import { track } from "@/lib/analytics";
 
 function BadgePreview() {

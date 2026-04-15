@@ -52,7 +52,13 @@ export function DashboardLayout({
 }) {
   const [section, setSection] = useState<Section>("challenges");
 
-  let lastGroup: string | undefined;
+  // Pre-compute showGroup outside render to avoid mutating a variable inside map
+  const navItems = NAV_ITEMS.reduce<
+    Array<(typeof NAV_ITEMS)[number] & { showGroup: boolean }>
+  >((acc, item) => {
+    const prevGroup = acc.at(-1)?.group;
+    return [...acc, { ...item, showGroup: !!(item.group && item.group !== prevGroup) }];
+  }, []);
 
   return (
     <div className="flex gap-8">
@@ -62,10 +68,9 @@ export function DashboardLayout({
         aria-label="Dashboard navigation"
       >
         <div className="sticky top-20 space-y-0.5">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const active = section === item.id;
-            const showGroup = item.group && item.group !== lastGroup;
-            lastGroup = item.group;
+            const { showGroup } = item;
 
             return (
               <div key={item.id}>

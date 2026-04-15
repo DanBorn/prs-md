@@ -45,7 +45,6 @@ function renderBadge({
   const neonDim = "#3ab858";
   const accent = "#a78bfa";
   const bgMain = "#1a1b26";
-  const bgCard = "#21222e";
   const bgRaised = "#282a3a";
   const textMuted = "#8b8fa3";
   const textDim = "#5a5e73";

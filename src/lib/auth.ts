@@ -64,10 +64,10 @@ export const handlers = {
 };
 
 export const auth: NextAuthResult["auth"] = ((...args: unknown[]) =>
-  (getInstance().auth as Function)(...args)) as NextAuthResult["auth"];
+  (getInstance().auth as (...a: unknown[]) => unknown)(...args)) as NextAuthResult["auth"];
 
 export const signIn: NextAuthResult["signIn"] = ((...args: unknown[]) =>
-  (getInstance().signIn as Function)(...args)) as NextAuthResult["signIn"];
+  (getInstance().signIn as (...a: unknown[]) => unknown)(...args)) as NextAuthResult["signIn"];
 
 export const signOut: NextAuthResult["signOut"] = ((...args: unknown[]) =>
-  (getInstance().signOut as Function)(...args)) as NextAuthResult["signOut"];
+  (getInstance().signOut as (...a: unknown[]) => unknown)(...args)) as NextAuthResult["signOut"];

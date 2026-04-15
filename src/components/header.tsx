@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { Logo } from "./logo";
 
 // Replace with real Stripe payment link once generated
@@ -40,19 +41,19 @@ export function Header() {
       }}
     >
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <a href="/" className="group">
+        <Link href="/" className="group">
           <Logo />
-        </a>
+        </Link>
 
         <nav className="flex items-center gap-1">
           {user ? (
             <>
-              <a
+              <Link
                 href="/dashboard"
                 className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
               >
                 dashboard
-              </a>
+              </Link>
               <a
                 href={DONATE_URL}
                 target="_blank"
