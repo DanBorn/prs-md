@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { apiKeys, challenges, accounts } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { decrypt } from "@/lib/crypto";
+import { decrypt, decryptToken } from "@/lib/crypto";
 import { parsePrUrl, fetchPrDiff } from "@/lib/github";
 import { generateQuestions } from "@/lib/llm";
 
@@ -58,6 +58,8 @@ export async function POST(req: NextRequest) {
     .from(accounts)
     .where(eq(accounts.userId, session.user.id));
   const ghAccount = userAccounts.find((a) => a.provider === "github");
+  // Decrypt the stored token — handles both encrypted JSON and legacy plaintext
+  const ghAccessToken = decryptToken(ghAccount?.access_token ?? null) ?? undefined;
 
   // Fetch the diff
   let diff: string;
@@ -67,7 +69,7 @@ export async function POST(req: NextRequest) {
       parsed.owner,
       parsed.repo,
       parsed.pull,
-      ghAccount?.access_token ?? undefined
+      ghAccessToken
     );
     diff = result.diff;
     title = result.title;

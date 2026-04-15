@@ -1,8 +1,35 @@
 import NextAuth, { type NextAuthResult } from "next-auth";
+import type { Adapter } from "next-auth/adapters";
 import GitHub from "next-auth/providers/github";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { getDb } from "@/db";
 import { accounts, sessions, users, verificationTokens } from "@/db/schema";
+import { encryptToken } from "@/lib/crypto";
+
+/**
+ * Wrap an Auth.js adapter to encrypt OAuth access_token and refresh_token
+ * at rest before they are written to the database.
+ *
+ * Tokens are stored as JSON: { encrypted, iv, authTag }.
+ * Use decryptToken() from src/lib/crypto.ts to read them back.
+ */
+function withEncryptedTokens(adapter: Adapter): Adapter {
+  return {
+    ...adapter,
+    // Intercept linkAccount to encrypt tokens before the base adapter writes them
+    linkAccount(account) {
+      return adapter.linkAccount!({
+        ...account,
+        access_token: account.access_token
+          ? encryptToken(account.access_token)
+          : account.access_token,
+        refresh_token: account.refresh_token
+          ? encryptToken(account.refresh_token)
+          : account.refresh_token,
+      });
+    },
+  };
+}
 
 let _instance: NextAuthResult | null = null;
 
@@ -10,12 +37,14 @@ function getInstance(): NextAuthResult {
   if (!_instance) {
     const db = getDb();
     _instance = NextAuth({
-      adapter: DrizzleAdapter(db, {
-        usersTable: users,
-        accountsTable: accounts,
-        sessionsTable: sessions,
-        verificationTokensTable: verificationTokens,
-      }),
+      adapter: withEncryptedTokens(
+        DrizzleAdapter(db, {
+          usersTable: users,
+          accountsTable: accounts,
+          sessionsTable: sessions,
+          verificationTokensTable: verificationTokens,
+        })
+      ),
       providers: [
         GitHub({
           clientId: process.env.AUTH_GITHUB_ID,
