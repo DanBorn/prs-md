@@ -61,10 +61,39 @@ export function DashboardLayout({
   }, []);
 
   return (
-    <div className="flex gap-8">
-      {/* Sidebar */}
+    <div className="md:flex md:gap-8">
+      {/* ── Mobile: horizontal scrollable tabs ── */}
       <nav
-        className="w-48 shrink-0"
+        className="dash-mobile-nav -mx-4 mb-6 flex gap-2 overflow-x-auto px-4 pb-2 md:hidden"
+        aria-label="Dashboard navigation"
+      >
+        {NAV_ITEMS.map((item) => {
+          const active = section === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setSection(item.id)}
+              data-active={active}
+              className="docs-mobile-tab flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 font-mono text-xs font-medium whitespace-nowrap transition-colors"
+            >
+              <span className="text-[10px] opacity-60">{item.icon}</span>
+              {item.label}
+              {item.id === "challenges" && challenges.length > 0 && (
+                <span
+                  className="ml-0.5 font-mono text-[10px]"
+                  style={{ color: "var(--color-text-dim)" }}
+                >
+                  {challenges.length}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* ── Desktop: vertical sidebar ── */}
+      <nav
+        className="hidden w-48 shrink-0 md:block"
         aria-label="Dashboard navigation"
       >
         <div className="sticky top-20 space-y-0.5">

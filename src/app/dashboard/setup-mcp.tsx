@@ -98,7 +98,7 @@ export function SetupMcp({ mcpToken }: { mcpToken?: string | null }) {
         <p className="font-mono text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: "var(--color-text-dim)" }}>
           Choose a mode
         </p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
           <button
             onClick={() => setMode("token")}
             data-active={mode === "token" ? "token" : ""}
@@ -141,7 +141,7 @@ export function SetupMcp({ mcpToken }: { mcpToken?: string | null }) {
       {/* Token generation (token mode only) */}
       {mode === "token" && (
         <div
-          className="rounded-lg border p-4"
+          className="rounded-lg border p-3 sm:p-4"
           style={{
             borderColor: "oklch(82% 0.22 145 / 0.15)",
             background: "oklch(82% 0.22 145 / 0.04)",
@@ -235,13 +235,14 @@ export function SetupMcp({ mcpToken }: { mcpToken?: string | null }) {
           </span>
         </div>
         <div
-          className="rounded-lg border p-4 font-mono text-[12px] leading-relaxed"
+          className="overflow-x-auto rounded-lg border p-3 sm:p-4 font-mono text-[11px] sm:text-[12px] leading-relaxed"
           style={{
             borderColor: "var(--color-border)",
             background: "oklch(11% 0.01 260)",
+            WebkitOverflowScrolling: "touch" as never,
           }}
         >
-          <div style={{ color: "var(--color-text-dim)" }}>
+          <div className="w-max sm:w-auto" style={{ color: "var(--color-text-dim)" }}>
             <span style={{ color: "var(--color-accent)" }}>You:</span>{" "}
             <span style={{ color: "var(--color-text-muted)" }}>
               Run a prs.md Turing Test on https://github.com/acme/api/pull/247

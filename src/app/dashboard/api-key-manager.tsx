@@ -62,7 +62,7 @@ export function ApiKeyManager({
 
   return (
     <div
-      className="rounded-xl border p-6"
+      className="rounded-xl border p-4 sm:p-6"
       style={{
         borderColor: "var(--color-border)",
         background: "var(--color-surface)",
@@ -143,7 +143,7 @@ export function ApiKeyManager({
       <button
         onClick={handleSave}
         disabled={isPending}
-        className="btn-secondary mt-3 rounded-lg px-4 py-2 font-mono text-xs font-bold transition-all"
+        className="btn-secondary mt-3 w-full sm:w-auto rounded-lg px-4 py-2 font-mono text-xs font-bold transition-all"
       >
         {hasKey(provider) ? "Update" : "Save"} {selectedProvider.label} Key
       </button>

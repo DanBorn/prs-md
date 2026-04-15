@@ -47,15 +47,15 @@ export function CodeBlock({
 
       {/* Code area */}
       <div className="relative">
-        <pre className="overflow-x-auto p-4 font-mono text-[12px] leading-relaxed">
+        <pre className="overflow-x-auto p-3 pr-16 font-mono text-[11px] leading-relaxed sm:p-4 sm:pr-16 sm:text-[12px]">
           <code style={{ color: "var(--color-text-muted)" }}>{code}</code>
         </pre>
 
-        {/* Copy button */}
+        {/* Copy button — always visible on mobile (no hover), hover-reveal on desktop */}
         <button
           onClick={handleCopy}
           data-copied={String(copied)}
-          className="code-copy-btn absolute top-2 right-2 rounded-md border px-2 py-1 font-mono text-[10px] font-medium opacity-0 transition-all group-hover:opacity-100"
+          className="code-copy-btn absolute top-2 right-2 rounded-md border px-2 py-1 font-mono text-[10px] font-medium transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
         >
           {copied ? "✓ copied" : "copy"}
         </button>

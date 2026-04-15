@@ -11,10 +11,10 @@ export function Footer() {
 
   return (
     <footer
-      className="border-t px-4 py-8"
+      className="border-t px-4 py-6 sm:py-8"
       style={{ borderColor: "var(--color-border-subtle)" }}
     >
-      <div className="mx-auto flex max-w-5xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto max-w-5xl space-y-4 sm:flex sm:items-center sm:justify-between sm:space-y-0">
         <div className="flex items-center gap-2">
           <LogoMark />
           <span className="font-mono text-xs" style={{ color: "var(--color-text-dim)" }}>
@@ -22,7 +22,7 @@ export function Footer() {
           </span>
         </div>
 
-        <nav className="flex items-center gap-4" aria-label="Footer navigation">
+        <nav className="flex flex-wrap items-center gap-x-4 gap-y-2" aria-label="Footer navigation">
           <Link href="/about" className="link-dim font-mono text-xs transition-colors">
             about
           </Link>
@@ -42,7 +42,6 @@ export function Footer() {
           </a>
           {!session?.user && (
             <>
-              <span style={{ color: "var(--color-border)" }}>|</span>
               <button
                 onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
                 className="link-dim font-mono text-xs transition-colors"

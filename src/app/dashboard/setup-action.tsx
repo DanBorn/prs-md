@@ -63,13 +63,14 @@ export function SetupAction() {
           repository secret. Add these three:
         </p>
         <div
-          className="rounded-lg border overflow-hidden"
+          className="overflow-x-auto rounded-lg border"
           style={{
             borderColor: "var(--color-border)",
             background: "var(--color-surface-raised)",
+            WebkitOverflowScrolling: "touch" as never,
           }}
         >
-          <table className="w-full font-mono text-[11px]">
+          <table className="w-full min-w-[360px] font-mono text-[11px]">
             <thead>
               <tr
                 style={{
@@ -148,7 +149,7 @@ export function SetupAction() {
 
       {/* Callback token instructions */}
       <div
-        className="rounded-lg border p-4"
+        className="rounded-lg border p-3 sm:p-4"
         style={{
           borderColor: "oklch(82% 0.22 145 / 0.15)",
           background: "oklch(82% 0.22 145 / 0.04)",
@@ -166,7 +167,7 @@ export function SetupAction() {
         >
           <li>
             Go to{" "}
-            <span style={{ color: "var(--color-accent)" }}>
+            <span className="break-all" style={{ color: "var(--color-accent)" }}>
               github.com/settings/personal-access-tokens/new
             </span>
           </li>

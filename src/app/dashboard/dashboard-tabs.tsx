@@ -47,14 +47,14 @@ export function DashboardTabs({
   return (
     <div>
       {/* Method selector — horizontal cards */}
-      <div className="grid grid-cols-3 gap-3 mb-8">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3 mb-8">
         {TABS.map((t) => {
           const active = tab === t.id;
           return (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className="group relative rounded-xl border p-4 text-left transition-all"
+              className="group relative rounded-xl border p-3 sm:p-4 text-left transition-all"
               style={{
                 borderColor: active
                   ? "oklch(82% 0.22 145 / 0.3)"
@@ -101,7 +101,7 @@ export function DashboardTabs({
                 </span>
               </div>
               <p
-                className="font-mono text-[10px] leading-relaxed"
+                className="hidden sm:block font-mono text-[10px] leading-relaxed"
                 style={{ color: "var(--color-text-dim)" }}
               >
                 {t.description}
@@ -129,7 +129,7 @@ export function DashboardTabs({
 
         {tab === "cli" && (
           <section
-            className="rounded-xl border p-6"
+            className="rounded-xl border p-4 sm:p-6"
             style={{
               borderColor: "var(--color-border)",
               background: "var(--color-surface)",
@@ -154,7 +154,7 @@ export function DashboardTabs({
 
         {tab === "mcp" && (
           <section
-            className="rounded-xl border p-6"
+            className="rounded-xl border p-4 sm:p-6"
             style={{
               borderColor: "var(--color-border)",
               background: "var(--color-surface)",

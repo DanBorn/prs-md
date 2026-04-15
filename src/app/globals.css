@@ -424,6 +424,10 @@ body {
 }
 
 /* ── Docs prose ── */
+.docs-prose {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
 .docs-prose h1 {
   font-size: 1.75rem;
   font-weight: 800;
@@ -476,28 +480,33 @@ body {
 }
 .docs-prose code {
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   background: var(--color-surface-raised);
   border: 1px solid var(--color-border-subtle);
   border-radius: 4px;
   padding: 0.1em 0.4em;
   color: var(--color-neon);
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 .docs-prose pre {
   background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 1rem 1.25rem;
+  padding: 0.75rem 1rem;
   overflow-x: auto;
   margin-bottom: 1.25rem;
+  -webkit-overflow-scrolling: touch;
 }
 .docs-prose pre code {
   background: none;
   border: none;
   padding: 0;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: var(--color-text-muted);
   line-height: 1.7;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 .docs-prose .docs-callout {
   border-radius: var(--radius-md);
@@ -546,6 +555,120 @@ body {
 .mcp-mode-btn:focus-visible {
   outline: 2px solid oklch(82% 0.22 145 / 0.5);
   outline-offset: 2px;
+}
+
+/* ── Mobile hamburger button ── */
+.mobile-hamburger {
+  color: var(--color-text-muted);
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-hamburger:hover {
+  color: var(--color-text);
+}
+.mobile-hamburger:active {
+  transform: scale(0.92);
+}
+
+.hamburger-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 18px;
+}
+.hamburger-lines span {
+  display: block;
+  height: 1.5px;
+  width: 100%;
+  background: currentColor;
+  border-radius: 1px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.2s ease;
+  transform-origin: center;
+}
+.hamburger-lines[data-open="true"] span:nth-child(1) {
+  transform: translateY(5.5px) rotate(45deg);
+}
+.hamburger-lines[data-open="true"] span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.hamburger-lines[data-open="true"] span:nth-child(3) {
+  transform: translateY(-5.5px) rotate(-45deg);
+}
+
+/* ── Mobile drawer ── */
+.mobile-drawer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  border-bottom: 1px solid transparent;
+}
+.mobile-drawer[data-open="true"] {
+  grid-template-rows: 1fr;
+  border-color: var(--color-border-subtle);
+}
+.mobile-drawer-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+.mobile-drawer[data-open="true"] .mobile-drawer-inner {
+  overflow: visible;
+}
+
+/* ── Mobile backdrop ── */
+.mobile-backdrop {
+  background: oklch(0% 0 0 / 0.5);
+  backdrop-filter: blur(4px);
+  animation: fade-in 0.25s ease forwards;
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Mobile nav items ── */
+.mobile-nav-item {
+  color: var(--color-text-muted);
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-nav-item:hover {
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+.mobile-nav-item:active {
+  transform: scale(0.98);
+  background: var(--color-surface-raised);
+}
+
+/* ── Docs & Dashboard mobile tabs ── */
+.docs-mobile-tab {
+  color: var(--color-text-dim);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  -webkit-tap-highlight-color: transparent;
+}
+.docs-mobile-tab:hover {
+  color: var(--color-text-muted);
+  border-color: oklch(30% 0.01 260);
+}
+.docs-mobile-tab:active {
+  transform: scale(0.96);
+}
+.docs-mobile-tab[data-active="true"] {
+  color: var(--color-neon);
+  background: var(--color-neon-glow);
+  border-color: oklch(82% 0.22 145 / 0.3);
+}
+
+/* Hide scrollbar on mobile nav strips */
+.docs-mobile-nav,
+.dash-mobile-nav {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.docs-mobile-nav::-webkit-scrollbar,
+.dash-mobile-nav::-webkit-scrollbar {
+  display: none;
 }
 
 /* ── Code block copy button ── */

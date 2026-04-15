@@ -8,9 +8,11 @@ export const metadata: Metadata = {
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto flex max-w-5xl gap-12 px-4 py-12">
-      <DocsSidebar />
-      <article className="min-w-0 flex-1">{children}</article>
+    <div className="mx-auto max-w-5xl px-4 py-8 md:py-12">
+      <div className="md:flex md:gap-12">
+        <DocsSidebar />
+        <article className="min-w-0 flex-1">{children}</article>
+      </div>
     </div>
   );
 }

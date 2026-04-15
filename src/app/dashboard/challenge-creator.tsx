@@ -41,7 +41,7 @@ export function ChallengeCreator() {
 
   return (
     <div
-      className="rounded-xl border p-6"
+      className="rounded-xl border p-4 sm:p-6"
       style={{
         borderColor: "var(--color-border)",
         background: "var(--color-surface)",
@@ -61,19 +61,19 @@ export function ChallengeCreator() {
         Paste a public GitHub PR URL. We&apos;ll analyze the diff and generate 3 targeted questions.
       </p>
 
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row">
         <input
           type="url"
           value={prUrl}
           onChange={(e) => setPrUrl(e.target.value)}
           placeholder="https://github.com/owner/repo/pull/123"
-          className="input-field flex-1 rounded-lg border px-3 py-2.5 font-mono text-xs transition-colors focus:outline-none"
+          className="input-field w-full sm:flex-1 rounded-lg border px-3 py-2.5 font-mono text-xs transition-colors focus:outline-none"
           onKeyDown={(e) => { if (e.key === "Enter") handleCreate(); }}
         />
         <button
           onClick={handleCreate}
           disabled={loading || isPending}
-          className="btn-primary shrink-0 rounded-lg px-5 py-2.5 font-mono text-xs font-bold transition-all"
+          className="btn-primary w-full sm:w-auto shrink-0 rounded-lg px-5 py-2.5 font-mono text-xs font-bold transition-all"
         >
           {loading ? "Analyzing..." : "Generate →"}
         </button>

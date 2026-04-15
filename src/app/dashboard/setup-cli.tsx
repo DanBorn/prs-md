@@ -74,19 +74,22 @@ export PRS_API_KEY=AIza...`}
           to paste into your PR description.
         </p>
         <div
-          className="mt-3 rounded-lg border p-4 font-mono text-[11px] leading-relaxed"
+          className="mt-3 overflow-x-auto rounded-lg border p-3 font-mono text-[10px] leading-relaxed sm:p-4 sm:text-[11px]"
           style={{
             borderColor: "var(--color-border)",
             background: "oklch(11% 0.01 260)",
             color: "var(--color-text-dim)",
+            WebkitOverflowScrolling: "touch",
           }}
         >
-          <div style={{ color: "var(--color-neon)" }}>  ┌────────────────────────────────────────────┐</div>
-          <div style={{ color: "var(--color-neon)" }}>  │  ✓ 100% HUMAN VERIFIED           87%      │</div>
-          <div style={{ color: "var(--color-neon)" }}>  │  Q1  92% ████████████░  ✓                 │</div>
-          <div style={{ color: "var(--color-neon)" }}>  │  Q2  85% █████████░░░░  ✓                 │</div>
-          <div style={{ color: "var(--color-neon)" }}>  │  Q3  84% █████████░░░░  ✓                 │</div>
-          <div style={{ color: "var(--color-neon)" }}>  └────────────────────────────────────────────┘</div>
+          <div className="w-max" style={{ color: "var(--color-neon)" }}>
+            <div>  ┌────────────────────────────────────────────┐</div>
+            <div>  │  ✓ 100% HUMAN VERIFIED           87%      │</div>
+            <div>  │  Q1  92% ████████████░  ✓                 │</div>
+            <div>  │  Q2  85% █████████░░░░  ✓                 │</div>
+            <div>  │  Q3  84% █████████░░░░  ✓                 │</div>
+            <div>  └────────────────────────────────────────────┘</div>
+          </div>
         </div>
       </div>
 

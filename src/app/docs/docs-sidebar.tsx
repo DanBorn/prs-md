@@ -22,36 +22,62 @@ export function DocsSidebar() {
   );
 
   return (
-    <nav className="w-44 shrink-0" aria-label="Docs navigation">
-      <div className="sticky top-20 space-y-0.5">
-        {items.map((item) => {
+    <>
+      {/* ── Mobile: horizontal scroll strip ── */}
+      <nav
+        className="docs-mobile-nav -mx-4 mb-6 flex gap-2 overflow-x-auto px-4 pb-2 md:hidden"
+        aria-label="Docs navigation"
+      >
+        {NAV.map((item) => {
           const active = pathname === item.href;
           return (
-            <div key={item.href}>
-              {item.showGroup && (
-                <p
-                  className="mt-5 mb-2 px-3 font-mono text-[10px] font-bold uppercase tracking-widest"
-                  style={{ color: "var(--color-text-dim)" }}
-                >
-                  {item.group}
-                </p>
-              )}
-              <Link
-                href={item.href}
-                data-active={active}
-                className="sidebar-item flex w-full items-center gap-2.5 rounded-lg px-3 py-2 font-mono text-xs font-medium transition-colors"
-              >
-                <span
-                  className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded font-mono text-[8px] font-black opacity-60"
-                >
-                  {item.icon}
-                </span>
-                {item.label}
-              </Link>
-            </div>
+            <Link
+              key={item.href}
+              href={item.href}
+              data-active={active}
+              className="docs-mobile-tab flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 font-mono text-xs font-medium whitespace-nowrap transition-colors"
+            >
+              <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded font-mono text-[7px] font-black opacity-60">
+                {item.icon}
+              </span>
+              {item.label}
+            </Link>
           );
         })}
-      </div>
-    </nav>
+      </nav>
+
+      {/* ── Desktop: vertical sidebar ── */}
+      <nav className="hidden w-44 shrink-0 md:block" aria-label="Docs navigation">
+        <div className="sticky top-20 space-y-0.5">
+          {items.map((item) => {
+            const active = pathname === item.href;
+            return (
+              <div key={item.href}>
+                {item.showGroup && (
+                  <p
+                    className="mt-5 mb-2 px-3 font-mono text-[10px] font-bold uppercase tracking-widest"
+                    style={{ color: "var(--color-text-dim)" }}
+                  >
+                    {item.group}
+                  </p>
+                )}
+                <Link
+                  href={item.href}
+                  data-active={active}
+                  className="sidebar-item flex w-full items-center gap-2.5 rounded-lg px-3 py-2 font-mono text-xs font-medium transition-colors"
+                >
+                  <span
+                    className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded font-mono text-[8px] font-black opacity-60"
+                  >
+                    {item.icon}
+                  </span>
+                  {item.label}
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+      </nav>
+    </>
   );
 }

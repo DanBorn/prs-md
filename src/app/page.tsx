@@ -140,7 +140,7 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* ─── HERO ─── */}
-      <section className="relative overflow-hidden px-4 pt-24 pb-32">
+      <section className="relative overflow-hidden px-4 pt-16 pb-20 sm:pt-24 sm:pb-32">
         {/* Gradient orbs */}
         <div
           className="absolute top-[-200px] left-1/2 -translate-x-1/2 h-[600px] w-[900px] rounded-full blur-[120px] -z-10"
@@ -166,22 +166,25 @@ export default function Home() {
         />
 
         <div className="relative mx-auto max-w-3xl text-center">
-          {/* Badge pill */}
+          {/* Badge pill — hide logo on mobile (redundant with header) */}
           <div
-            className="mx-auto mb-8 inline-flex items-center gap-2.5 rounded-full border px-4 py-1.5"
+            className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1 sm:mb-8 sm:gap-2.5 sm:px-4 sm:py-1.5"
             style={{
               borderColor: "var(--color-border)",
               background: "var(--color-surface)",
             }}
           >
-            <LogoMark />
-            <span className="font-mono text-[11px] font-medium" style={{ color: "var(--color-text-muted)" }}>
+            <span className="hidden sm:inline-flex"><LogoMark /></span>
+            <span className="font-mono text-[10px] font-medium sm:text-[11px]" style={{ color: "var(--color-text-muted)" }}>
               open-source &middot; zero cost &middot; bring your own key
             </span>
           </div>
 
           {/* Main headline */}
-          <h1 className="text-5xl font-extrabold tracking-tight leading-[1.05] sm:text-7xl" style={{ letterSpacing: "-0.04em" }}>
+          <h1
+            className="text-[2.5rem] font-extrabold leading-[1.05] tracking-tight sm:text-7xl"
+            style={{ letterSpacing: "-0.04em" }}
+          >
             <span style={{ color: "var(--color-text)" }}>The Turing Test</span>
             <br />
             <span
@@ -198,7 +201,7 @@ export default function Home() {
           </h1>
 
           <p
-            className="mx-auto mt-6 max-w-xl text-base leading-relaxed sm:text-lg"
+            className="mx-auto mt-4 max-w-xl text-sm leading-relaxed sm:mt-6 sm:text-lg"
             style={{ color: "var(--color-text-muted)" }}
           >
             Anyone can merge AI-generated code. Fewer can explain it.
@@ -207,10 +210,10 @@ export default function Home() {
           </p>
 
           {/* CTA row */}
-          <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:justify-center">
             <button
               onClick={handleSignUp}
-              className="btn-primary group relative overflow-hidden rounded-lg px-8 py-3.5 font-mono text-sm font-bold transition-all"
+              className="btn-primary group relative w-full overflow-hidden rounded-lg px-8 py-3.5 font-mono text-sm font-bold transition-all sm:w-auto"
             >
               {session?.user ? "Go to Dashboard" : "Create free account"}
               <span className="ml-2 inline-block transition-transform group-hover:translate-x-0.5">&rarr;</span>
@@ -218,7 +221,7 @@ export default function Home() {
             {!session?.user && (
               <button
                 onClick={handleSignIn}
-                className="btn-outline rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all"
+                className="btn-outline w-full rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all sm:w-auto"
               >
                 Sign in
               </button>
@@ -226,7 +229,7 @@ export default function Home() {
             {session?.user && (
               <a
                 href="#how-it-works"
-                className="btn-outline rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all"
+                className="btn-outline w-full rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all sm:w-auto"
               >
                 How it works
               </a>
@@ -234,7 +237,7 @@ export default function Home() {
           </div>
 
           {/* Works via row */}
-          <p className="mt-5 font-mono text-[11px]" style={{ color: "var(--color-text-dim)" }}>
+          <p className="mt-4 font-mono text-[11px] sm:mt-5" style={{ color: "var(--color-text-dim)" }}>
             Works via{" "}
             <span style={{ color: "var(--color-text-muted)" }}>Web</span>
             <span className="mx-2">&middot;</span>
@@ -245,7 +248,7 @@ export default function Home() {
 
           {/* Terminal preview */}
           <div
-            className="mx-auto mt-16 max-w-lg rounded-xl border overflow-hidden text-left"
+            className="mx-auto mt-10 max-w-lg rounded-xl border overflow-hidden text-left sm:mt-16"
             style={{
               borderColor: "var(--color-border)",
               background: "var(--color-surface)",
@@ -254,44 +257,46 @@ export default function Home() {
           >
             {/* Title bar */}
             <div
-              className="flex items-center gap-2 border-b px-4 py-2.5"
+              className="flex items-center gap-2 border-b px-3 py-2 sm:px-4 sm:py-2.5"
               style={{ borderColor: "var(--color-border-subtle)" }}
             >
-              <span className="h-3 w-3 rounded-full" style={{ background: "oklch(65% 0.22 25)" }} />
-              <span className="h-3 w-3 rounded-full" style={{ background: "oklch(78% 0.16 70)" }} />
-              <span className="h-3 w-3 rounded-full" style={{ background: "oklch(72% 0.18 145)" }} />
-              <span className="ml-2 font-mono text-[10px]" style={{ color: "var(--color-text-dim)" }}>
+              <span className="h-2.5 w-2.5 rounded-full sm:h-3 sm:w-3" style={{ background: "oklch(65% 0.22 25)" }} />
+              <span className="h-2.5 w-2.5 rounded-full sm:h-3 sm:w-3" style={{ background: "oklch(78% 0.16 70)" }} />
+              <span className="h-2.5 w-2.5 rounded-full sm:h-3 sm:w-3" style={{ background: "oklch(72% 0.18 145)" }} />
+              <span className="ml-2 font-mono text-[9px] sm:text-[10px]" style={{ color: "var(--color-text-dim)" }}>
                 prs.md — challenge
               </span>
             </div>
             {/* Terminal content */}
-            <div className="p-5 font-mono text-xs leading-relaxed space-y-2">
+            <div className="p-3 font-mono text-[11px] leading-relaxed space-y-1.5 sm:p-5 sm:text-xs sm:space-y-2">
               <p style={{ color: "var(--color-text-dim)" }}>
-                <span style={{ color: "var(--color-neon)" }}>$</span> prs verify https://github.com/acme/api/pull/247
+                <span style={{ color: "var(--color-neon)" }}>$</span>{" "}
+                <span className="hidden sm:inline">prs verify https://github.com/acme/api/pull/247</span>
+                <span className="sm:hidden">prs verify .../acme/api/pull/247</span>
               </p>
               <p style={{ color: "var(--color-text-muted)" }}>
                 Fetching diff... <span style={{ color: "var(--color-neon)" }}>done</span>
               </p>
               <p style={{ color: "var(--color-text-muted)" }}>Generating questions...</p>
-              <div className="mt-3 rounded-lg border p-3" style={{ borderColor: "var(--color-border-subtle)", background: "var(--color-surface-raised)" }}>
+              <div className="mt-2 rounded-lg border p-2.5 sm:mt-3 sm:p-3" style={{ borderColor: "var(--color-border-subtle)", background: "var(--color-surface-raised)" }}>
                 <p style={{ color: "var(--color-accent)" }}>Q1:</p>
                 <p style={{ color: "var(--color-text)" }}>
                   Why does the new rate limiter use a sliding window instead of fixed buckets?
                 </p>
               </div>
-              <div className="rounded-lg border p-3" style={{ borderColor: "var(--color-border-subtle)", background: "var(--color-surface-raised)" }}>
+              <div className="rounded-lg border p-2.5 sm:p-3" style={{ borderColor: "var(--color-border-subtle)", background: "var(--color-surface-raised)" }}>
                 <p style={{ color: "var(--color-accent)" }}>Q2:</p>
                 <p style={{ color: "var(--color-text)" }}>
                   What happens to in-flight requests when the Redis connection drops?
                 </p>
               </div>
-              <div className="rounded-lg border p-3" style={{ borderColor: "oklch(78% 0.16 70 / 0.3)", background: "var(--color-surface-raised)" }}>
+              <div className="rounded-lg border p-2.5 sm:p-3" style={{ borderColor: "oklch(78% 0.16 70 / 0.3)", background: "var(--color-surface-raised)" }}>
                 <p style={{ color: "var(--color-warning)" }}>Q3 (trap):</p>
                 <p style={{ color: "var(--color-text)" }}>
                   Which config option did you add to disable the cache warmup on deploy?
                 </p>
               </div>
-              <p className="mt-2" style={{ color: "var(--color-text-dim)" }}>
+              <p className="mt-1.5 sm:mt-2" style={{ color: "var(--color-text-dim)" }}>
                 Timer: <span style={{ color: "var(--color-neon)" }}>3:00</span> &middot; Type your answers below
                 <span className="cursor-blink" />
               </p>
@@ -303,50 +308,50 @@ export default function Home() {
       {/* ─── HOW IT WORKS ─── */}
       <section
         id="how-it-works"
-        className="relative border-t px-4 py-24"
+        className="relative border-t px-4 py-16 sm:py-24"
         style={{ borderColor: "var(--color-border-subtle)" }}
       >
         <div className="mx-auto max-w-4xl">
-          <p className="text-center font-mono text-xs font-medium uppercase tracking-widest mb-3" style={{ color: "var(--color-neon)" }}>
+          <p className="text-center font-mono text-[10px] font-medium uppercase tracking-widest mb-2 sm:text-xs sm:mb-3" style={{ color: "var(--color-neon)" }}>
             Process
           </p>
-          <h2 className="text-center text-3xl font-bold tracking-tight mb-16 sm:text-4xl">
+          <h2 className="text-center text-2xl font-bold tracking-tight mb-10 sm:text-4xl sm:mb-16">
             From PR link to verified badge
           </h2>
 
-          <div className="grid gap-px sm:grid-cols-4 rounded-xl overflow-hidden border" style={{ borderColor: "var(--color-border)", background: "var(--color-border-subtle)" }}>
+          <div className="grid gap-px grid-cols-2 sm:grid-cols-4 rounded-xl overflow-hidden border" style={{ borderColor: "var(--color-border)", background: "var(--color-border-subtle)" }}>
             {[
               {
                 num: "01",
                 title: "Drop a PR link",
-                desc: "Paste any GitHub PR URL — into the dashboard, CLI, or your editor. Wherever you work.",
+                desc: "Paste any GitHub PR URL — into the dashboard, CLI, or your editor.",
               },
               {
                 num: "02",
                 title: "Questions generated",
-                desc: "Your LLM reads the actual diff and writes 3 targeted questions about your specific changes — plus a trap for bluffers.",
+                desc: "Your LLM reads the diff and writes 3 targeted questions — plus a trap.",
               },
               {
                 num: "03",
                 title: "Answer under pressure",
-                desc: "Three minutes. One window. No AI assist, no copy-paste. Just what you actually know.",
+                desc: "Three minutes. No AI assist, no copy-paste. Just what you know.",
               },
               {
                 num: "04",
                 title: "Earn your badge",
-                desc: "Pass and get a permanent proof page your reviewers can verify. Retry as needed — every attempt is on the record.",
+                desc: "Pass and get a permanent proof page your reviewers can verify.",
               },
             ].map((step) => (
               <div
                 key={step.num}
-                className="relative p-6 sm:p-8"
+                className="relative p-4 sm:p-8"
                 style={{ background: "var(--color-surface)" }}
               >
-                <span className="block font-mono text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "var(--color-text-dim)" }}>
+                <span className="block font-mono text-[9px] font-bold uppercase tracking-widest mb-2 sm:text-[10px] sm:mb-4" style={{ color: "var(--color-text-dim)" }}>
                   Step {step.num}
                 </span>
-                <h3 className="text-sm font-bold mb-1">{step.title}</h3>
-                <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+                <h3 className="text-xs font-bold mb-1 sm:text-sm">{step.title}</h3>
+                <p className="text-[11px] leading-relaxed sm:text-xs" style={{ color: "var(--color-text-muted)" }}>
                   {step.desc}
                 </p>
               </div>
@@ -357,41 +362,42 @@ export default function Home() {
 
       {/* ─── WORKS EVERYWHERE ─── */}
       <section
-        className="border-t px-4 py-24"
+        className="border-t px-4 py-16 sm:py-24"
         style={{ borderColor: "var(--color-border-subtle)" }}
       >
         <div className="mx-auto max-w-4xl">
-          <p className="text-center font-mono text-xs font-medium uppercase tracking-widest mb-3" style={{ color: "var(--color-neon)" }}>
+          <p className="text-center font-mono text-[10px] font-medium uppercase tracking-widest mb-2 sm:text-xs sm:mb-3" style={{ color: "var(--color-neon)" }}>
             Integrations
           </p>
-          <h2 className="text-center text-3xl font-bold tracking-tight mb-4 sm:text-4xl">
+          <h2 className="text-center text-2xl font-bold tracking-tight mb-3 sm:text-4xl sm:mb-4">
             Works wherever you do
           </h2>
-          <p className="text-center text-base mb-14" style={{ color: "var(--color-text-muted)" }}>
+          <p className="text-center text-sm mb-10 sm:text-base sm:mb-14" style={{ color: "var(--color-text-muted)" }}>
             Web dashboard, terminal, or straight from your editor — pick your workflow.
           </p>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          {/* Horizontal scroll on mobile, grid on sm+ */}
+          <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0">
             {/* Web */}
             <div
-              className="flex flex-col rounded-xl border p-6"
+              className="flex w-[280px] shrink-0 flex-col rounded-xl border p-5 snap-start sm:w-auto sm:p-6"
               style={{
                 borderColor: "var(--color-border)",
                 background: "var(--color-surface)",
               }}
             >
               <div
-                className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg font-mono text-xs font-black"
+                className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg font-mono text-[10px] font-black sm:mb-4 sm:h-10 sm:w-10 sm:text-xs"
                 style={{ background: "var(--color-neon-glow)", color: "var(--color-neon)" }}
               >
                 WEB
               </div>
-              <h3 className="text-sm font-bold mb-2">Web Dashboard</h3>
-              <p className="text-xs leading-relaxed flex-1" style={{ color: "var(--color-text-muted)" }}>
+              <h3 className="text-sm font-bold mb-1.5 sm:mb-2">Web Dashboard</h3>
+              <p className="text-[11px] leading-relaxed flex-1 sm:text-xs" style={{ color: "var(--color-text-muted)" }}>
                 Paste a URL, pick your LLM, answer in the browser. No install, no config — just start.
               </p>
               <div
-                className="mt-4 rounded-lg border px-3 py-2 font-mono text-[10px]"
+                className="mt-3 rounded-lg border px-3 py-2 font-mono text-[10px] sm:mt-4"
                 style={{
                   borderColor: "var(--color-border-subtle)",
                   background: "var(--color-surface-raised)",
@@ -404,24 +410,24 @@ export default function Home() {
 
             {/* CLI */}
             <div
-              className="flex flex-col rounded-xl border p-6"
+              className="flex w-[280px] shrink-0 flex-col rounded-xl border p-5 snap-start sm:w-auto sm:p-6"
               style={{
                 borderColor: "var(--color-border)",
                 background: "var(--color-surface)",
               }}
             >
               <div
-                className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg font-mono text-sm font-black"
+                className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg font-mono text-sm font-black sm:mb-4 sm:h-10 sm:w-10"
                 style={{ background: "var(--color-neon-glow)", color: "var(--color-neon)" }}
               >
                 $
               </div>
-              <h3 className="text-sm font-bold mb-2">Command Line</h3>
-              <p className="text-xs leading-relaxed flex-1" style={{ color: "var(--color-text-muted)" }}>
+              <h3 className="text-sm font-bold mb-1.5 sm:mb-2">Command Line</h3>
+              <p className="text-[11px] leading-relaxed flex-1 sm:text-xs" style={{ color: "var(--color-text-muted)" }}>
                 One command, zero ceremony. Run it in your terminal, pipe it into your workflow, or wire it into CI.
               </p>
               <div
-                className="mt-4 rounded-lg border px-3 py-2 font-mono text-[10px]"
+                className="mt-3 rounded-lg border px-3 py-2 font-mono text-[10px] sm:mt-4"
                 style={{
                   borderColor: "var(--color-border-subtle)",
                   background: "var(--color-surface-raised)",
@@ -435,24 +441,24 @@ export default function Home() {
 
             {/* MCP */}
             <div
-              className="flex flex-col rounded-xl border p-6"
+              className="flex w-[280px] shrink-0 flex-col rounded-xl border p-5 snap-start sm:w-auto sm:p-6"
               style={{
                 borderColor: "var(--color-border)",
                 background: "var(--color-surface)",
               }}
             >
               <div
-                className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg font-mono text-xs font-black"
+                className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg font-mono text-[10px] font-black sm:mb-4 sm:h-10 sm:w-10 sm:text-xs"
                 style={{ background: "var(--color-accent-dim)", color: "var(--color-accent)" }}
               >
                 MCP
               </div>
-              <h3 className="text-sm font-bold mb-2">MCP &amp; IDE</h3>
-              <p className="text-xs leading-relaxed flex-1" style={{ color: "var(--color-text-muted)" }}>
+              <h3 className="text-sm font-bold mb-1.5 sm:mb-2">MCP &amp; IDE</h3>
+              <p className="text-[11px] leading-relaxed flex-1 sm:text-xs" style={{ color: "var(--color-text-muted)" }}>
                 Runs inside Cursor, Windsurf, and any MCP-compatible editor. Trigger a challenge without leaving your IDE.
               </p>
               <div
-                className="mt-4 rounded-lg border px-3 py-2 font-mono text-[10px]"
+                className="mt-3 rounded-lg border px-3 py-2 font-mono text-[10px] sm:mt-4"
                 style={{
                   borderColor: "var(--color-border-subtle)",
                   background: "var(--color-surface-raised)",
@@ -469,46 +475,46 @@ export default function Home() {
 
       {/* ─── BADGE PREVIEW ─── */}
       <section
-        className="border-t px-4 py-24"
+        className="border-t px-4 py-16 sm:py-24"
         style={{ borderColor: "var(--color-border-subtle)" }}
       >
         <div className="mx-auto max-w-2xl text-center">
-          <p className="font-mono text-xs font-medium uppercase tracking-widest mb-3" style={{ color: "var(--color-neon)" }}>
+          <p className="font-mono text-[10px] font-medium uppercase tracking-widest mb-2 sm:text-xs sm:mb-3" style={{ color: "var(--color-neon)" }}>
             The reward
           </p>
-          <h2 className="text-3xl font-bold tracking-tight mb-4 sm:text-4xl">
+          <h2 className="text-2xl font-bold tracking-tight mb-3 sm:text-4xl sm:mb-4">
             Proof, not just a PR description
           </h2>
-          <p className="text-base leading-relaxed mb-12" style={{ color: "var(--color-text-muted)" }}>
+          <p className="text-sm leading-relaxed mb-8 sm:text-base sm:mb-12" style={{ color: "var(--color-text-muted)" }}>
             Every badge links to a permanent proof page with your full Q&amp;A.
-            <br />
+            <br className="hidden sm:block" />
             Not just &ldquo;approved&rdquo; — actually verified.
           </p>
 
-          {/* Badge mockup — simulated PR description with real badge */}
+          {/* Badge mockup */}
           <div
-            className="relative mx-auto w-full max-w-xl rounded-2xl border p-6 sm:p-8 overflow-hidden"
+            className="relative mx-auto w-full max-w-xl rounded-xl border p-4 overflow-hidden sm:rounded-2xl sm:p-6 md:p-8"
             style={{
               borderColor: "var(--color-border)",
               background: "var(--color-surface)",
               boxShadow: "var(--shadow-elevated)",
             }}
           >
-            <div className="text-left mb-6">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="h-6 w-6 rounded-full" style={{ background: "var(--color-surface-raised)" }} />
-                <span className="font-mono text-xs" style={{ color: "var(--color-text-dim)" }}>yourname</span>
-                <span className="font-mono text-xs" style={{ color: "var(--color-text-dim)" }}>commented 2 hours ago</span>
+            <div className="text-left mb-4 sm:mb-6">
+              <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                <div className="h-5 w-5 rounded-full sm:h-6 sm:w-6" style={{ background: "var(--color-surface-raised)" }} />
+                <span className="font-mono text-[10px] sm:text-xs" style={{ color: "var(--color-text-dim)" }}>yourname</span>
+                <span className="hidden font-mono text-xs sm:inline" style={{ color: "var(--color-text-dim)" }}>commented 2 hours ago</span>
               </div>
-              <div className="rounded-lg border p-4 overflow-hidden" style={{ borderColor: "var(--color-border-subtle)", background: "var(--color-surface-raised)" }}>
-                <p className="text-sm mb-4" style={{ color: "var(--color-text-muted)" }}>
+              <div className="rounded-lg border p-3 overflow-hidden sm:p-4" style={{ borderColor: "var(--color-border-subtle)", background: "var(--color-surface-raised)" }}>
+                <p className="text-xs mb-3 sm:text-sm sm:mb-4" style={{ color: "var(--color-text-muted)" }}>
                   This PR adds rate limiting to the API gateway using a sliding window algorithm...
                 </p>
                 <BadgePreview />
               </div>
             </div>
 
-            <p className="font-mono text-[10px] text-center" style={{ color: "var(--color-text-dim)" }}>
+            <p className="font-mono text-[9px] text-center sm:text-[10px]" style={{ color: "var(--color-text-dim)" }}>
               Click the badge &rarr; proof page with full Q&amp;A breakdown
             </p>
           </div>
@@ -517,24 +523,24 @@ export default function Home() {
 
       {/* ─── TRUST ─── */}
       <section
-        className="relative border-t px-4 py-24 noise"
+        className="relative border-t px-4 py-16 noise sm:py-24"
         style={{
           borderColor: "var(--color-border-subtle)",
           background: "var(--color-surface)",
         }}
       >
         <div className="relative z-10 mx-auto max-w-3xl text-center">
-          <p className="font-mono text-xs font-medium uppercase tracking-widest mb-3" style={{ color: "var(--color-neon)" }}>
+          <p className="font-mono text-[10px] font-medium uppercase tracking-widest mb-2 sm:text-xs sm:mb-3" style={{ color: "var(--color-neon)" }}>
             Security
           </p>
-          <h2 className="text-3xl font-bold tracking-tight mb-4 sm:text-4xl">
+          <h2 className="text-2xl font-bold tracking-tight mb-3 sm:text-4xl sm:mb-4">
             Your key, your rules
           </h2>
-          <p className="text-base leading-relaxed mb-12" style={{ color: "var(--color-text-muted)" }}>
+          <p className="text-sm leading-relaxed mb-8 sm:text-base sm:mb-12" style={{ color: "var(--color-text-muted)" }}>
             We store your API key. That&apos;s a real ask. Here&apos;s exactly what we do — and don&apos;t do — with it.
           </p>
 
-          <div className="grid gap-4 text-left sm:grid-cols-3">
+          <div className="grid gap-3 text-left sm:grid-cols-3 sm:gap-4">
             {[
               {
                 icon: "{ }",
@@ -544,24 +550,24 @@ export default function Home() {
               {
                 icon: "AES",
                 title: "Encrypted at rest",
-                text: "AES-256-GCM with a per-key IV and auth tag. Decrypted in-memory only — never stored in plaintext, never logged.",
+                text: "AES-256-GCM with a per-key IV and auth tag. Decrypted in-memory only — never stored in plaintext.",
               },
               {
                 icon: "$0",
                 title: "No revenue, no motive",
-                text: "Built on Vercel and Neon free tiers. Zero infrastructure cost means zero incentive to sell your data. We run on principle.",
+                text: "Built on Vercel and Neon free tiers. Zero cost means zero incentive to sell your data.",
               },
             ].map((item) => (
               <div
                 key={item.title}
-                className="rounded-xl border p-5"
+                className="rounded-xl border p-4 sm:p-5"
                 style={{
                   borderColor: "var(--color-border)",
                   background: "var(--color-bg)",
                 }}
               >
                 <span
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg font-mono text-xs font-black mb-3"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg font-mono text-[10px] font-black mb-2 sm:h-9 sm:w-9 sm:text-xs sm:mb-3"
                   style={{
                     background: "var(--color-neon-glow)",
                     color: "var(--color-neon)",
@@ -570,7 +576,7 @@ export default function Home() {
                   {item.icon}
                 </span>
                 <p className="text-sm font-semibold mb-1">{item.title}</p>
-                <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+                <p className="text-[11px] leading-relaxed sm:text-xs" style={{ color: "var(--color-text-muted)" }}>
                   {item.text}
                 </p>
               </div>
@@ -580,12 +586,12 @@ export default function Home() {
       </section>
 
       {/* ─── CTA ─── */}
-      <section className="border-t px-4 py-20" style={{ borderColor: "var(--color-border-subtle)" }}>
+      <section className="border-t px-4 py-14 sm:py-20" style={{ borderColor: "var(--color-border-subtle)" }}>
         <div className="mx-auto max-w-xl text-center">
-          <h2 className="text-2xl font-bold tracking-tight mb-3 sm:text-3xl">
+          <h2 className="text-xl font-bold tracking-tight mb-2 sm:text-3xl sm:mb-3">
             Your next PR deserves this.
           </h2>
-          <p className="text-sm mb-8" style={{ color: "var(--color-text-muted)" }}>
+          <p className="text-xs mb-6 sm:text-sm sm:mb-8" style={{ color: "var(--color-text-muted)" }}>
             Sign in with GitHub, add your API key, drop a PR link.
             <br />
             Your first verified badge is five minutes away.
@@ -593,7 +599,7 @@ export default function Home() {
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <button
               onClick={handleSignUp}
-              className="btn-primary group rounded-lg px-8 py-3.5 font-mono text-sm font-bold transition-all"
+              className="btn-primary group w-full rounded-lg px-8 py-3.5 font-mono text-sm font-bold transition-all sm:w-auto"
             >
               {session?.user ? "Go to Dashboard" : "Create free account"}
               <span className="ml-2 inline-block transition-transform group-hover:translate-x-0.5">&rarr;</span>
@@ -601,7 +607,7 @@ export default function Home() {
             {!session?.user && (
               <button
                 onClick={handleSignIn}
-                className="btn-outline rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all"
+                className="btn-outline w-full rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all sm:w-auto"
               >
                 Sign in
               </button>
