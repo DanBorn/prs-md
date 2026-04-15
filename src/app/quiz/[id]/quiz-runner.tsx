@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { track } from "@/lib/analytics";
 
 interface Question {
   index: number;
@@ -39,6 +40,7 @@ export function QuizRunner({
 
     const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
     const answersToSubmit = finalAnswers ?? answers;
+    track("quiz_submitted", { challenge_id: challengeId, time_spent_seconds: elapsed });
 
     try {
       const res = await fetch("/api/grade", {
@@ -95,6 +97,7 @@ export function QuizRunner({
   function handleStart() {
     startTimeRef.current = Date.now();
     setStarted(true);
+    track("quiz_started", { challenge_id: challengeId });
   }
 
   function updateAnswer(index: number, value: string) {

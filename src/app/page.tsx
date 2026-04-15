@@ -3,6 +3,7 @@
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Logo, LogoMark } from "@/components/logo";
+import { track } from "@/lib/analytics";
 
 function BadgePreview() {
   const W = 480;
@@ -123,8 +124,10 @@ export default function Home() {
 
   function handleCta() {
     if (session?.user) {
+      track("cta_clicked", { action: "dashboard" });
       router.push("/dashboard");
     } else {
+      track("cta_clicked", { action: "sign_in" });
       signIn("github");
     }
   }
