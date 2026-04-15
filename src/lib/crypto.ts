@@ -50,3 +50,33 @@ export function decrypt(data: EncryptedData): string {
 
   return decrypted;
 }
+
+/**
+ * Encrypt an OAuth token for storage in the database.
+ * Returns a JSON string containing the ciphertext, IV, and auth tag.
+ */
+export function encryptToken(plaintext: string): string {
+  return JSON.stringify(encrypt(plaintext));
+}
+
+/**
+ * Decrypt a stored OAuth token.
+ *
+ * Handles two formats:
+ *  - Encrypted: JSON string with { encrypted, iv, authTag } — decrypt and return
+ *  - Legacy plaintext: return as-is (rows written before encryption was added)
+ *
+ * Returns null for null/undefined/empty input.
+ */
+export function decryptToken(stored: string | null | undefined): string | null {
+  if (!stored) return null;
+  try {
+    const parsed = JSON.parse(stored) as Partial<EncryptedData>;
+    if (parsed.encrypted && parsed.iv && parsed.authTag) {
+      return decrypt(parsed as EncryptedData);
+    }
+  } catch {
+    // Not JSON — legacy plaintext token, return as-is
+  }
+  return stored;
+}

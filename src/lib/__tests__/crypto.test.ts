@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { encrypt, decrypt } from "../crypto";
+import { encrypt, decrypt, encryptToken, decryptToken } from "../crypto";
 
 // 32 zero bytes as base64 — valid key for testing
 const VALID_KEY_B64 = Buffer.alloc(32).toString("base64");
@@ -102,6 +102,49 @@ describe("crypto", () => {
       const e2 = encrypt("value-two");
       expect(decrypt(e1)).toBe("value-one");
       expect(decrypt(e2)).toBe("value-two");
+    });
+  });
+
+  describe("encryptToken / decryptToken", () => {
+    it("roundtrips a GitHub OAuth token", () => {
+      const token = "ghs_abc123XYZ9876realToken";
+      const stored = encryptToken(token);
+      expect(decryptToken(stored)).toBe(token);
+    });
+
+    it("encryptToken produces a JSON string with encrypted/iv/authTag", () => {
+      const stored = encryptToken("any-token");
+      const parsed = JSON.parse(stored) as Record<string, unknown>;
+      expect(typeof parsed.encrypted).toBe("string");
+      expect(typeof parsed.iv).toBe("string");
+      expect(typeof parsed.authTag).toBe("string");
+    });
+
+    it("decryptToken returns null for null input", () => {
+      expect(decryptToken(null)).toBeNull();
+    });
+
+    it("decryptToken returns null for undefined input", () => {
+      expect(decryptToken(undefined)).toBeNull();
+    });
+
+    it("decryptToken returns null for empty string", () => {
+      expect(decryptToken("")).toBeNull();
+    });
+
+    it("decryptToken returns plaintext as-is for legacy unencrypted tokens", () => {
+      // Simulates a row written before encryption was introduced
+      const legacyToken = "ghs_legacyPlaintextToken";
+      expect(decryptToken(legacyToken)).toBe(legacyToken);
+    });
+
+    it("decryptToken treats arbitrary JSON without encrypted/iv/authTag as legacy", () => {
+      expect(decryptToken('{"foo":"bar"}')).toBe('{"foo":"bar"}');
+    });
+
+    it("each encryptToken call is unique due to random IV", () => {
+      const t = "ghs_sameToken";
+      expect(encryptToken(t)).not.toBe(encryptToken(t));
     });
   });
 });
