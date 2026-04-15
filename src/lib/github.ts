@@ -4,11 +4,22 @@ export function parsePrUrl(url: string): {
   repo: string;
   pull: number;
 } | null {
-  const match = url.match(
-    /github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/
-  );
-  if (!match) return null;
-  return { owner: match[1], repo: match[2], pull: parseInt(match[3], 10) };
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  // Reject anything that isn't github.com — prevents SSRF via crafted URLs
+  if (parsed.hostname !== "github.com") return null;
+  const parts = parsed.pathname.split("/");
+  // Expected: ["", owner, repo, "pull", number]
+  if (parts.length < 5 || parts[3] !== "pull") return null;
+  const owner = parts[1];
+  const repo = parts[2];
+  const pullStr = parts[4];
+  if (!owner || !repo || !/^\d+$/.test(pullStr)) return null;
+  return { owner, repo, pull: parseInt(pullStr, 10) };
 }
 
 /** Fetch the .diff content for a PR using a GitHub token for higher rate limits. */

@@ -67,8 +67,8 @@ async function fireCallback(
   );
 
   if (!res.ok) {
-    const text = await res.text();
-    console.error(`repository_dispatch failed: ${res.status} ${text}`);
+    // Log only the status code — not the body which may contain repo/token context
+    console.error(`repository_dispatch failed: ${res.status}`);
   }
 }
 
@@ -88,6 +88,21 @@ export async function POST(req: NextRequest) {
   if (!challengeId || !Array.isArray(answers)) {
     return NextResponse.json(
       { error: "challengeId and answers are required" },
+      { status: 400 }
+    );
+  }
+
+  // Validate answer array — must be strings, capped at reasonable length
+  const MAX_ANSWER_LENGTH = 2000;
+  if (
+    !answers.every(
+      (a) => typeof a === "string" && a.length <= MAX_ANSWER_LENGTH
+    )
+  ) {
+    return NextResponse.json(
+      {
+        error: `Each answer must be a string of at most ${MAX_ANSWER_LENGTH} characters`,
+      },
       { status: 400 }
     );
   }
@@ -112,7 +127,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Count previous attempts for attempt number
+  // Count previous attempts — cap at 5 to prevent API key exhaustion
+  const MAX_ATTEMPTS = 5;
   const [{ value: prevCount }] = await db
     .select({ value: count() })
     .from(attempts)
@@ -122,6 +138,14 @@ export async function POST(req: NextRequest) {
         eq(attempts.userId, session.user.id)
       )
     );
+
+  if (prevCount >= MAX_ATTEMPTS) {
+    return NextResponse.json(
+      { error: "Maximum attempts reached for this challenge" },
+      { status: 429 }
+    );
+  }
+
   const attemptNumber = prevCount + 1;
 
   // Load challenge
@@ -138,6 +162,14 @@ export async function POST(req: NextRequest) {
   if (challenge.status !== "active") {
     return NextResponse.json(
       { error: "Challenge is not active" },
+      { status: 400 }
+    );
+  }
+
+  // Validate answers count matches questions count
+  if (answers.length !== challenge.questions.length) {
+    return NextResponse.json(
+      { error: `Expected ${challenge.questions.length} answers, got ${answers.length}` },
       { status: 400 }
     );
   }

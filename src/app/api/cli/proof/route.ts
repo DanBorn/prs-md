@@ -8,6 +8,9 @@ import { customAlphabet } from "nanoid";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 10);
 
+const PASS_THRESHOLD = 70;
+const MAX_ANSWER_LENGTH = 2000;
+
 /**
  * POST /api/cli/proof
  *
@@ -21,6 +24,10 @@ const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 10);
  *   The proof page still shows all questions and answers transparently.
  *
  * Only public repos are supported.
+ *
+ * Security: totalScore and passed are re-computed server-side from the
+ * submitted scores. The client's passed/totalScore values are ignored.
+ * Individual scores are clamped to [0, 100].
  */
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -32,8 +39,6 @@ export async function POST(req: NextRequest) {
     questions,
     answers,
     scores,
-    totalScore,
-    passed,
     timeSpentSeconds,
     gradingFeedback,
   } = body as {
@@ -48,18 +53,57 @@ export async function POST(req: NextRequest) {
     }>;
     answers: string[];
     scores: number[];
-    totalScore: number;
-    passed: boolean;
     timeSpentSeconds: number;
     gradingFeedback: string[];
   };
 
-  if (!prUrl || !questions || !answers) {
+  if (!prUrl || !questions || !answers || !scores) {
     return NextResponse.json(
-      { error: "Missing required fields: prUrl, questions, answers" },
+      { error: "Missing required fields: prUrl, questions, answers, scores" },
       { status: 400 },
     );
   }
+
+  if (!Array.isArray(questions) || questions.length !== 3) {
+    return NextResponse.json(
+      { error: "Exactly 3 questions are required" },
+      { status: 400 },
+    );
+  }
+
+  if (!Array.isArray(answers) || answers.length !== questions.length) {
+    return NextResponse.json(
+      { error: `Expected ${questions.length} answers` },
+      { status: 400 },
+    );
+  }
+
+  if (
+    !answers.every(
+      (a) => typeof a === "string" && a.length <= MAX_ANSWER_LENGTH
+    )
+  ) {
+    return NextResponse.json(
+      { error: `Each answer must be a string of at most ${MAX_ANSWER_LENGTH} characters` },
+      { status: 400 },
+    );
+  }
+
+  if (!Array.isArray(scores) || scores.length !== questions.length) {
+    return NextResponse.json(
+      { error: `Expected ${questions.length} scores` },
+      { status: 400 },
+    );
+  }
+
+  // Re-compute totalScore and passed server-side — never trust the caller
+  const clampedScores = scores.map((s) =>
+    Math.max(0, Math.min(100, Math.round(Number(s) || 0)))
+  );
+  const totalScore = Math.round(
+    clampedScores.reduce((sum, s) => sum + s, 0) / clampedScores.length
+  );
+  const passed = totalScore >= PASS_THRESHOLD;
 
   if (!passed) {
     return NextResponse.json(
@@ -137,18 +181,18 @@ export async function POST(req: NextRequest) {
     timeLimitSeconds: 180,
   });
 
-  // Create attempt record
+  // Create attempt record with server-computed scores
   const attempt = await db
     .insert(attempts)
     .values({
       challengeId,
       userId: user.id,
       answers,
-      scores,
+      scores: clampedScores,
       totalScore,
       passed,
-      timeSpentSeconds,
-      gradingFeedback,
+      timeSpentSeconds: typeof timeSpentSeconds === "number" ? timeSpentSeconds : 0,
+      gradingFeedback: Array.isArray(gradingFeedback) ? gradingFeedback : [],
     })
     .returning();
 

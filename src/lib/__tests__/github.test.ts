@@ -29,10 +29,17 @@ describe("parsePrUrl", () => {
     });
   });
 
-  it("also matches bare domain (no https://)", () => {
-    // The regex is not anchored to https://, so bare domains match too
+  it("rejects bare domain without scheme (not a valid URL)", () => {
+    // Security: parsePrUrl requires a valid https:// URL to prevent
+    // bypass via crafted domains like evil.com/github.com/...
     const result = parsePrUrl("github.com/owner/repo/pull/1");
-    expect(result).toEqual({ owner: "owner", repo: "repo", pull: 1 });
+    expect(result).toBeNull();
+  });
+
+  it("rejects SSRF bypass via crafted domain containing github.com", () => {
+    expect(
+      parsePrUrl("https://evil.com/github.com/owner/repo/pull/1")
+    ).toBeNull();
   });
 
   it("returns null for non-GitHub domains", () => {

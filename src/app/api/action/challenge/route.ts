@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { timingSafeEqual } from "crypto";
 import { nanoid } from "nanoid";
 import { db } from "@/db";
 import { challenges } from "@/db/schema";
@@ -16,14 +17,34 @@ interface ActionChallengeBody {
 }
 
 /**
+ * Verify the shared secret sent by the GitHub Action.
+ * Uses timing-safe comparison to prevent timing attacks.
+ */
+function verifyActionSecret(req: NextRequest): boolean {
+  const secret = process.env.ACTION_SECRET;
+  if (!secret) return false;
+  const provided = req.headers.get("x-action-secret");
+  if (!provided) return false;
+  try {
+    return timingSafeEqual(Buffer.from(provided), Buffer.from(secret));
+  } catch {
+    // Buffers different length — definitely wrong
+    return false;
+  }
+}
+
+/**
  * POST /api/action/challenge
  *
  * Called by the GitHub Action after generating questions.
  * Stores the challenge and encrypts the callback token for later use.
- * No user auth — the action authenticates via the callback token's
- * validity when prs.md fires repository_dispatch.
+ * Protected by ACTION_SECRET shared secret.
  */
 export async function POST(req: NextRequest) {
+  if (!verifyActionSecret(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const body = (await req.json()) as ActionChallengeBody;
 
   const { prUrl, prTitle, prRepo, sha, prNumber, questions, callbackToken } =
@@ -65,9 +86,10 @@ export async function POST(req: NextRequest) {
   });
 
   const serverUrl =
-    process.env.NEXT_PUBLIC_APP_URL ?? process.env.VERCEL_URL
+    process.env.NEXT_PUBLIC_APP_URL ??
+    (process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000";
+      : "http://localhost:3000");
 
   return NextResponse.json({
     id,
