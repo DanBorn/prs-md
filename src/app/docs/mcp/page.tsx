@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CodeBlock } from "@/components/code-block";
 
 export const metadata: Metadata = {
   title: "MCP & IDE — Docs",
@@ -56,7 +57,8 @@ export default function McpDocsPage() {
         Add the server to your Cursor MCP config. Open{" "}
         <code>~/.cursor/mcp.json</code> (create it if it doesn&apos;t exist) and add:
       </p>
-      <pre><code>{`{
+      <CodeBlock
+        code={`{
   "mcpServers": {
     "prs-md": {
       "command": "npx",
@@ -66,7 +68,10 @@ export default function McpDocsPage() {
       }
     }
   }
-}`}</code></pre>
+}`}
+        language="json"
+        filename="~/.cursor/mcp.json"
+      />
       <p>
         Restart Cursor. You should see <strong>prs-md</strong> appear in the MCP tools panel.
       </p>
@@ -83,7 +88,8 @@ export default function McpDocsPage() {
         Edit <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> on macOS
         (or the equivalent on Windows) and add the server under <code>mcpServers</code>:
       </p>
-      <pre><code>{`{
+      <CodeBlock
+        code={`{
   "mcpServers": {
     "prs-md": {
       "command": "npx",
@@ -93,7 +99,10 @@ export default function McpDocsPage() {
       }
     }
   }
-}`}</code></pre>
+}`}
+        language="json"
+        filename="claude_desktop_config.json"
+      />
 
       <h2>Using the tools</h2>
       <p>

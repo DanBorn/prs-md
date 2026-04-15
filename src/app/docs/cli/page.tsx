@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CodeBlock } from "@/components/code-block";
 
 export const metadata: Metadata = {
   title: "CLI — Docs",
@@ -35,7 +36,7 @@ export default function CliDocsPage() {
       </ul>
 
       <h2>Running a challenge</h2>
-      <pre><code>{`npx prs-md verify https://github.com/owner/repo/pull/123`}</code></pre>
+      <CodeBlock code="npx prs-md verify https://github.com/owner/repo/pull/123" />
       <p>
         The CLI authenticates using your stored credentials, fetches the diff, generates questions,
         and launches an interactive quiz in the terminal. Answers are submitted when you type them and
@@ -57,7 +58,7 @@ export default function CliDocsPage() {
         The CLI uses whichever API key you have saved in your PRs.md account. If you have multiple
         providers, pass <code>--provider</code> to select one:
       </p>
-      <pre><code>{`npx prs-md verify <pr-url> --provider anthropic`}</code></pre>
+      <CodeBlock code="npx prs-md verify <pr-url> --provider anthropic" />
       <p>
         Valid values: <code>openai</code>, <code>anthropic</code>, <code>gemini</code>.
       </p>
@@ -67,11 +68,15 @@ export default function CliDocsPage() {
         You can call the CLI from a CI script to require proof before a PR can be merged. Set the
         token as an environment variable:
       </p>
-      <pre><code>{`# .github/workflows/verify.yml
+      <CodeBlock
+        code={`# .github/workflows/verify.yml
 - name: PRs.md challenge
   env:
     PRS_TOKEN: \${{ secrets.PRS_TOKEN }}
-  run: npx prs-md verify \${{ github.event.pull_request.html_url }}`}</code></pre>
+  run: npx prs-md verify \${{ github.event.pull_request.html_url }}`}
+        language="yaml"
+        filename=".github/workflows/verify.yml"
+      />
       <div
         className="docs-callout"
         style={{ borderColor: "var(--color-border)", background: "var(--color-surface-raised)" }}
@@ -92,9 +97,9 @@ export default function CliDocsPage() {
       </ul>
 
       <h2>Flags</h2>
-      <pre><code>{`  --provider   openai | anthropic | gemini (default: first saved key)
+      <CodeBlock code={`  --provider   openai | anthropic | gemini (default: first saved key)
   --json       Output result as JSON instead of interactive UI
-  --no-color   Disable color output`}</code></pre>
+  --no-color   Disable color output`} />
     </div>
   );
 }

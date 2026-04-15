@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CodeBlock } from "@/components/code-block";
 
 export const metadata: Metadata = {
   title: "Web Dashboard — Docs",
@@ -78,7 +79,7 @@ export default function WebDocsPage() {
         A passing result creates a permanent proof page at <code>/proof/[id]</code>. From there you
         can copy the Markdown badge snippet and paste it into your PR description:
       </p>
-      <pre><code>{`[![PRs.md Verified](https://prs.md/api/badge/[id])](https://prs.md/proof/[id])`}</code></pre>
+      <CodeBlock code="[![PRs.md Verified](https://prs.md/api/badge/[id])](https://prs.md/proof/[id])" language="markdown" />
       <p>
         The badge is an SVG served by the app and can be embedded anywhere images are rendered —
         GitHub PR descriptions, README files, or Notion pages.
