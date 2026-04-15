@@ -585,26 +585,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── FOOTER ─── */}
-      <footer
-        className="border-t px-4 py-8"
-        style={{ borderColor: "var(--color-border-subtle)" }}
-      >
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <div className="flex items-center gap-2">
-            <LogoMark />
-            <span className="font-mono text-xs" style={{ color: "var(--color-text-dim)" }}>
-              open-source, zero cost, BYOK
-            </span>
-          </div>
-          <a
-            href="https://github.com"
-            className="link-dim font-mono text-xs transition-colors"
-          >
-            GitHub &#8599;
-          </a>
-        </div>
-      </footer>
     </div>
   );
 }
