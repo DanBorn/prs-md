@@ -12,6 +12,7 @@ const DONATE_URL = "#donate";
 export function Header() {
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,38 +46,20 @@ export function Header() {
           <Logo />
         </Link>
 
-        <nav className="flex items-center gap-1">
+        <nav className="flex items-center gap-1 md:gap-2">
           {user ? (
             <>
-              <Link
-                href="/dashboard"
-                className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
-              >
-                dashboard
-              </Link>
-              <Link
-                href="/about"
-                className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
-              >
-                about
-              </Link>
-              <Link
-                href="/docs"
-                className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
-              >
-                docs
-              </Link>
-              <a
-                href={DONATE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="donate-link flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                  <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                </svg>
-                donate
-              </a>
+              <div className="hidden md:flex items-center gap-1">
+                <Link href="/dashboard" className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors">dashboard</Link>
+                <Link href="/about" className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors">about</Link>
+                <Link href="/docs" className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors">docs</Link>
+                <a href={DONATE_URL} target="_blank" rel="noopener noreferrer" className="donate-link flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                  </svg>
+                  donate
+                </a>
+              </div>
 
               {/* User menu */}
               <div className="relative ml-1" ref={menuRef}>
@@ -107,7 +90,7 @@ export function Header() {
                   )}
                   {username && (
                     <span
-                      className="font-mono text-xs font-medium"
+                      className="hidden md:inline font-mono text-xs font-medium"
                       style={{ color: "var(--color-text-muted)" }}
                     >
                       {username}
@@ -180,45 +163,57 @@ export function Header() {
             </>
           ) : (
             <>
-              <Link
-                href="/about"
-                className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
-              >
-                about
-              </Link>
-              <Link
-                href="/docs"
-                className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
-              >
-                docs
-              </Link>
-              <a
-                href={DONATE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="donate-link flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                  <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                </svg>
-                donate
-              </a>
-              <button
-                onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
-                className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
-              >
-                Sign in
-              </button>
-              <button
-                onClick={() => signIn("github", { callbackUrl: "/accept-terms" })}
-                className="btn-primary rounded-md px-4 py-1.5 font-mono text-xs font-bold transition-all"
-              >
-                Sign up
-              </button>
+              <div className="hidden md:flex items-center gap-1">
+                <Link href="/about" className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors">about</Link>
+                <Link href="/docs" className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors">docs</Link>
+                <a href={DONATE_URL} target="_blank" rel="noopener noreferrer" className="donate-link flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                  </svg>
+                  donate
+                </a>
+                <button onClick={() => signIn("github", { callbackUrl: "/dashboard" })} className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors">Sign in</button>
+                <button onClick={() => signIn("github", { callbackUrl: "/accept-terms" })} className="btn-primary rounded-md px-4 py-1.5 font-mono text-xs font-bold transition-all">Sign up</button>
+              </div>
             </>
           )}
+
+          {/* Mobile menu button */}
+          <button className="md:hidden p-2 rounded-md transition-colors hover:bg-white/5 ml-1" onClick={() => setMobileNavOpen(!mobileNavOpen)}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
         </nav>
       </div>
+
+      {/* Mobile Navigation Dropdown */}
+      {mobileNavOpen && (
+        <div className="md:hidden border-t p-4 flex flex-col gap-2" style={{ borderColor: "var(--color-border-subtle)", background: "var(--color-surface)" }}>
+          {user ? (
+            <>
+              <Link href="/dashboard" className="nav-link rounded-md px-3 py-2 font-mono text-sm font-medium transition-colors" onClick={() => setMobileNavOpen(false)}>dashboard</Link>
+              <Link href="/about" className="nav-link rounded-md px-3 py-2 font-mono text-sm font-medium transition-colors" onClick={() => setMobileNavOpen(false)}>about</Link>
+              <Link href="/docs" className="nav-link rounded-md px-3 py-2 font-mono text-sm font-medium transition-colors" onClick={() => setMobileNavOpen(false)}>docs</Link>
+              <a href={DONATE_URL} target="_blank" rel="noopener noreferrer" className="donate-link flex items-center gap-1.5 rounded-md px-3 py-2 font-mono text-sm font-medium transition-colors" onClick={() => setMobileNavOpen(false)}>
+                donate
+              </a>
+            </>
+          ) : (
+            <>
+              <Link href="/about" className="nav-link rounded-md px-3 py-2 font-mono text-sm font-medium transition-colors" onClick={() => setMobileNavOpen(false)}>about</Link>
+              <Link href="/docs" className="nav-link rounded-md px-3 py-2 font-mono text-sm font-medium transition-colors" onClick={() => setMobileNavOpen(false)}>docs</Link>
+              <a href={DONATE_URL} target="_blank" rel="noopener noreferrer" className="donate-link flex items-center gap-1.5 rounded-md px-3 py-2 font-mono text-sm font-medium transition-colors" onClick={() => setMobileNavOpen(false)}>
+                donate
+              </a>
+              <button onClick={() => { signIn("github", { callbackUrl: "/dashboard" }); setMobileNavOpen(false); }} className="nav-link text-left rounded-md px-3 py-2 font-mono text-sm font-medium transition-colors">Sign in</button>
+              <button onClick={() => { signIn("github", { callbackUrl: "/accept-terms" }); setMobileNavOpen(false); }} className="btn-primary text-left rounded-md px-3 py-2 font-mono text-sm font-bold transition-all mt-2 w-fit">Sign up</button>
+            </>
+          )}
+        </div>
+      )}
     </header>
   );
 }

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const NAV = [
   { href: "/docs", label: "Getting Started", icon: "01" },
@@ -12,6 +13,7 @@ const NAV = [
 
 export function DocsSidebar() {
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const items = NAV.reduce<Array<(typeof NAV)[number] & { showGroup: boolean }>>(
     (acc, item) => {
@@ -22,8 +24,22 @@ export function DocsSidebar() {
   );
 
   return (
-    <nav className="w-44 shrink-0" aria-label="Docs navigation">
-      <div className="sticky top-20 space-y-0.5">
+    <>
+      <div className="md:hidden flex items-center">
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="flex items-center gap-2 text-sm font-mono btn-secondary px-3 py-1.5 rounded-md"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+          Docs Menu
+        </button>
+      </div>
+      <nav className={`w-full md:w-44 shrink-0 ${mobileOpen ? "block" : "hidden"} md:block`} aria-label="Docs navigation">
+        <div className="sticky top-20 space-y-0.5">
         {items.map((item) => {
           const active = pathname === item.href;
           return (
@@ -39,6 +55,7 @@ export function DocsSidebar() {
               <Link
                 href={item.href}
                 data-active={active}
+                onClick={() => setMobileOpen(false)}
                 className="sidebar-item flex w-full items-center gap-2.5 rounded-lg px-3 py-2 font-mono text-xs font-medium transition-colors"
               >
                 <span

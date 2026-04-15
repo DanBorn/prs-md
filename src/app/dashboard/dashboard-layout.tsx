@@ -51,6 +51,7 @@ export function DashboardLayout({
   hasMcpToken: boolean;
 }) {
   const [section, setSection] = useState<Section>("challenges");
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Pre-compute showGroup outside render to avoid mutating a variable inside map
   const navItems = NAV_ITEMS.reduce<
@@ -61,10 +62,25 @@ export function DashboardLayout({
   }, []);
 
   return (
-    <div className="flex gap-8">
+    <div className="flex flex-col md:flex-row gap-6 md:gap-8 relative">
+      {/* Mobile Sidebar Toggle */}
+      <div className="md:hidden flex items-center mb-4">
+        <button
+          onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+          className="flex items-center gap-2 text-sm font-mono btn-secondary px-3 py-1.5 rounded-md"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+          {NAV_ITEMS.find(i => i.id === section)?.label}
+        </button>
+      </div>
+
       {/* Sidebar */}
       <nav
-        className="w-48 shrink-0"
+        className={`w-full md:w-48 shrink-0 ${mobileSidebarOpen ? "block" : "hidden"} md:block`}
         aria-label="Dashboard navigation"
       >
         <div className="sticky top-20 space-y-0.5">
@@ -83,7 +99,7 @@ export function DashboardLayout({
                   </p>
                 )}
                 <button
-                  onClick={() => setSection(item.id)}
+                  onClick={() => { setSection(item.id); setMobileSidebarOpen(false); }}
                   data-active={active}
                   className="sidebar-item flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left font-mono text-xs font-medium transition-colors"
                 >
