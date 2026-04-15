@@ -54,6 +54,18 @@ export function Header() {
               >
                 dashboard
               </Link>
+              <Link
+                href="/about"
+                className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
+              >
+                about
+              </Link>
+              <Link
+                href="/docs"
+                className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
+              >
+                docs
+              </Link>
               <a
                 href={DONATE_URL}
                 target="_blank"
@@ -168,6 +180,18 @@ export function Header() {
             </>
           ) : (
             <>
+              <Link
+                href="/about"
+                className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
+              >
+                about
+              </Link>
+              <Link
+                href="/docs"
+                className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
+              >
+                docs
+              </Link>
               <a
                 href={DONATE_URL}
                 target="_blank"
