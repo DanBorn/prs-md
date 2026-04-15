@@ -23,6 +23,8 @@ npx drizzle-kit push   # Applies schema to your Neon DB
 pnpm dev               # Starts on http://localhost:3000
 ```
 
+Pre-commit hooks are installed automatically via `pnpm install` (Husky). On every commit, ESLint (`--fix`) and TypeScript type checking (`tsc --noEmit`) run on staged files.
+
 ### Running Tests
 
 ```bash
@@ -75,12 +77,12 @@ Key files to understand before making changes:
    ```
    Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `ci`
 
-3. Ensure tests pass and coverage does not drop:
+3. Run the pre-PR checklist:
    ```bash
-   pnpm test:coverage
-   pnpm lint
-   pnpm build
+   pnpm test:coverage    # Verify coverage stays >= 80%
+   pnpm lint             # ESLint (also runs automatically on commit)
    ```
+   (Note: `pnpm build` is not needed locally; CI runs it on every push.)
 
 4. Open a PR against `main`. The PR description should explain what changed and why.
 
@@ -98,9 +100,21 @@ Key files to understand before making changes:
 - API keys and tokens must go in `.env` only
 - Any auth, encryption, or user-data code needs extra scrutiny — flag it in your PR description
 
-Known gaps that contributions are welcome for:
-- Rate limiting on `/api/challenges`, `/api/grade`, and `/api/cli/proof`
-- Abuse prevention for anonymous proof submissions via `/api/cli/proof`
+### Known gaps that contributions are welcome for:
+- No IP-level rate limiting (per-attempt cap is in place, but `/api/cli/proof` flood protection via IP is not implemented)
+- GitHub OAuth tokens stored plaintext in the `accounts` table
+
+## CI & Merging
+
+All PRs must pass the CI pipeline before merging:
+- **`lint` job**: TypeScript type checking + ESLint (no `any` allowed)
+- **`test` job**: Vitest suite with coverage report
+- **`deploy` job**: Runs only on `main` after lint + test pass; deploys to Vercel
+
+Additionally:
+- At least one review approval from a code owner (`@DanBorn`) is required
+- Branch must be up to date with `main` before merging
+- Force pushes and branch deletions are blocked
 
 ## Issue Labels
 

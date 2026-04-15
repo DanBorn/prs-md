@@ -2,6 +2,7 @@
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org)
+[![CI](https://github.com/DanBorn/prs-md/actions/workflows/ci.yml/badge.svg)](https://github.com/DanBorn/prs-md/actions/workflows/ci.yml)
 [![Vercel](https://img.shields.io/badge/deploy-Vercel-black)](https://vercel.com)
 
 A "Turing Test for Pull Requests." Paste a GitHub PR URL, answer 3 targeted questions about the diff under a 3-minute timer, and earn a shareable proof badge. Stops unread AI-generated PRs from landing.
@@ -63,6 +64,7 @@ cp .env.example .env
 | `AUTH_GITHUB_ID` | Yes | GitHub OAuth App client ID |
 | `AUTH_GITHUB_SECRET` | Yes | GitHub OAuth App client secret |
 | `ENCRYPTION_KEY` | Yes | 32-byte base64 key — `openssl rand -base64 32` |
+| `ACTION_SECRET` | Yes | Shared secret for GitHub Action → API auth — `openssl rand -hex 32` |
 | `NEXTAUTH_URL` | Yes | Your app's base URL (e.g. `https://yourdomain.com`) |
 | `NEXT_PUBLIC_APP_URL` | Yes | Same as `NEXTAUTH_URL` |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | No | Google Analytics measurement ID |
@@ -132,11 +134,19 @@ See [`mcp/`](mcp/) for source and configuration details.
 
 ## Deploy to Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-org/prs-cert)
+Deployments are triggered automatically by the CI pipeline on merge to `main`. No manual Vercel button click is needed.
 
-1. Click the button above or import the repo in the Vercel dashboard
-2. Add all required environment variables from `.env.example`
-3. Deploy — Vercel sets `VERCEL_URL` automatically; set `NEXT_PUBLIC_APP_URL` to your custom domain
+**GitHub Secrets Required** (set in your repo):
+- `VERCEL_TOKEN` — Personal access token from Vercel
+- `VERCEL_ORG_ID` — From `.vercel/project.json`
+- `VERCEL_PROJECT_ID` — From `.vercel/project.json`
+
+When you merge a PR to `main`:
+1. CI runs (`lint`, `test`, `deploy` jobs in `.github/workflows/ci.yml`)
+2. If lint + tests pass, the `deploy` job runs: `vercel build --prod` → `vercel deploy --prebuilt --prod`
+3. Your app deploys automatically to Vercel
+
+Set `NEXT_PUBLIC_APP_URL` and other environment variables in the Vercel dashboard or in your `.env` before the first deploy.
 
 ## Using with Claude Code
 
@@ -149,6 +159,8 @@ claude    # Start Claude Code — reads CLAUDE.md automatically
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+PRs require CI checks to pass (lint and tests) and approval from a maintainer. The `main` branch is protected — no direct pushes allowed, and all branch protection rules must pass before merging.
 
 ## License
 

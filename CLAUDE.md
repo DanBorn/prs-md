@@ -69,15 +69,18 @@ drizzle.config.ts           # Drizzle Kit config (uses DATABASE_URL_OWNER for mi
 See `.env.example`. Key split:
 - `DATABASE_URL` — app runtime (prs_app role)
 - `DATABASE_URL_OWNER` — migrations only (neondb_owner role)
+- `ACTION_SECRET` — shared secret for GitHub Action → API authentication (timing-safe verified)
 
 ## Commands
 
 ```bash
-pnpm dev          # Start dev server
-pnpm build        # Production build
-pnpm lint         # ESLint
-npx drizzle-kit push   # Push schema to Neon (uses DATABASE_URL_OWNER)
-npx drizzle-kit studio # Browse data
+pnpm dev              # Start dev server
+pnpm build            # Production build
+pnpm lint             # ESLint
+pnpm test             # Run vitest suite
+pnpm test:coverage    # Tests with coverage report
+npx drizzle-kit push      # Push schema to Neon (uses DATABASE_URL_OWNER)
+npx drizzle-kit studio    # Browse data
 ```
 
 ## Security model
@@ -88,10 +91,25 @@ npx drizzle-kit studio # Browse data
 - GitHub OAuth with minimal scope (`read:user user:email`)
 - `/api/cli/proof` verifies GitHub identity via token when provided; anonymous otherwise
 - Challenge pages and proof pages are intentionally public (shareable)
+- **Prompt injection hardening**: Untrusted content (diffs, answers) wrapped in XML tags (`<diff>`, `<answer>`) with explicit anti-injection instructions in system prompts; Gemini uses `systemInstruction` field to prevent concatenation attacks
+- **Server-side score validation**: All LLM scores clamped to [0,100] and re-computed on `/api/cli/proof` to prevent tampering
+- **ACTION_SECRET auth**: GitHub Action → API calls verified with timing-safe comparison
+- **SSRF-safe URL parsing**: PR URL parsing uses `URL()` constructor + hostname allowlist (no unanchored regex)
+- **Security headers**: X-Frame-Options, HSTS, X-Content-Type-Options, etc. configured in `next.config.ts`
+- **Attempt rate limiting**: 5-attempt cap per user/challenge on grading endpoints
+- **MCP TTL eviction**: `activeChallenges` Map cleaned every 5 minutes to prevent memory exhaustion
 
 ## Known gaps / TODOs
 
-- No rate limiting on any endpoint (critical for `/api/cli/proof` and LLM-calling routes)
-- `/api/cli/proof` accepts anonymous submissions — abuse vector for fake proofs
+**Still open:**
+- No IP-level rate limiting (per-attempt cap is in place, but IP-based flood protection for `/api/cli/proof` is not implemented)
+- GitHub OAuth tokens stored plaintext in DB (`accounts` table) — consider encrypting
+
+**Fixed/Addressed:**
+- Rate limiting on endpoints — per-attempt cap (5 attempts per user/challenge) now in place
+- SSRF in URL parsing — fixed with `URL()` + hostname validation
+- Prompt injection — hardened with XML delimiters + anti-injection system prompts
+- Anonymous proof submissions — scores now server-side validated to prevent tampering
+
+**Infra:**
 - Production branch not marked as protected in Neon (requires Console, not available via CLI)
-- No IP allowlisting configured
