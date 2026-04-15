@@ -20,14 +20,14 @@ const CONTACT_EMAIL = "legal@prs.md";
 
 export default function TermsPage() {
   return (
-    <div className="mx-auto max-w-2xl px-4 py-16">
+    <div className="mx-auto max-w-2xl px-4 py-10 sm:py-16">
       {/* Header */}
-      <div className="mb-12">
+      <div className="mb-8 sm:mb-12">
         <p
           className="font-mono text-[10px] font-bold uppercase tracking-widest mb-4"
-          style={{ color: "var(--color-text-dim)" }}
+          style={{ color: "var(--color-neon)" }}
         >
-          Legal
+          Terms
         </p>
         <h1
           className="text-3xl font-extrabold tracking-tight mb-3"

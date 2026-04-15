@@ -3,7 +3,6 @@ export const dynamic = "force-dynamic";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { LogoMark } from "@/components/logo";
 import { AcceptTermsForm } from "./accept-terms-form";
 
 export const metadata: Metadata = {
@@ -25,13 +24,13 @@ export default async function AcceptTermsPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-56px)] items-start justify-center px-4 py-16 sm:items-center">
+    <div className="flex min-h-[calc(100vh-56px)] items-start justify-center px-4 py-10 sm:py-16 sm:items-center">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="mb-8 text-center">
-          <div className="mb-4 flex justify-center">
-            <LogoMark />
-          </div>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "var(--color-neon)" }}>
+            Terms
+          </p>
           <h1
             className="text-2xl font-extrabold tracking-tight mb-2"
             style={{ letterSpacing: "-0.03em" }}
@@ -45,7 +44,7 @@ export default async function AcceptTermsPage() {
 
         {/* Card */}
         <div
-          className="rounded-2xl border p-6"
+          className="rounded-2xl border p-4 sm:p-6"
           style={{
             borderColor: "var(--color-border)",
             background: "var(--color-surface)",
