@@ -60,7 +60,7 @@ export function ChallengeView({
       {/* Top accent */}
       <div className="h-1" style={{ background: "linear-gradient(90deg, var(--color-accent), var(--color-neon))" }} />
 
-      <div className="p-8">
+      <div className="p-5 sm:p-8">
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
@@ -69,14 +69,14 @@ export function ChallengeView({
               challenge
             </span>
           </div>
-          <h1 className="text-xl font-bold tracking-tight mb-1">
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight mb-1 break-words">
             {challenge.prTitle ?? "PR Challenge"}
           </h1>
           <a
             href={challenge.prUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="link-accent font-mono text-sm"
+            className="link-accent font-mono text-xs sm:text-sm break-all"
           >
             {challenge.prRepo} &nearr;
           </a>
@@ -100,11 +100,11 @@ export function ChallengeView({
             },
             { value: "70%", label: "Pass threshold" },
           ].map((stat) => (
-            <div key={stat.label} className="p-4 text-center" style={{ background: "var(--color-surface-raised)" }}>
-              <p className="font-mono text-xl font-black" style={{ color: "var(--color-neon)" }}>
+            <div key={stat.label} className="p-3 sm:p-4 text-center" style={{ background: "var(--color-surface-raised)" }}>
+              <p className="font-mono text-lg sm:text-xl font-black" style={{ color: "var(--color-neon)" }}>
                 {stat.value}
               </p>
-              <p className="font-mono text-[10px] uppercase tracking-wider mt-0.5" style={{ color: "var(--color-text-dim)" }}>
+              <p className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider mt-0.5" style={{ color: "var(--color-text-dim)" }}>
                 {stat.label}
               </p>
             </div>

@@ -111,7 +111,7 @@ export default async function ProofPage({ params }: Props) {
   const badgeMarkdown = `[![prs.md — 100% Human Verified](${badgeImgUrl})](${proofUrl})`;
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12">
+    <div className="mx-auto max-w-2xl px-4 py-6 sm:py-12">
       {session?.user && (
         <Breadcrumbs
           items={[
@@ -141,7 +141,7 @@ export default async function ProofPage({ params }: Props) {
         />
 
         {/* Header */}
-        <div className="relative px-8 pt-8 pb-6">
+        <div className="relative px-5 pt-5 pb-4 sm:px-8 sm:pt-8 sm:pb-6">
           {/* Glow behind badge */}
           <div
             className="absolute top-4 left-1/2 -translate-x-1/2 h-32 w-64 rounded-full blur-[60px] -z-0"
@@ -205,7 +205,7 @@ export default async function ProofPage({ params }: Props) {
 
           {/* Verified banner */}
           <div
-            className="mt-5 flex items-center gap-3 rounded-xl border px-5 py-3"
+            className="mt-4 sm:mt-5 flex items-center gap-3 rounded-xl border px-4 py-2.5 sm:px-5 sm:py-3"
             style={{
               borderColor: "oklch(82% 0.22 145 / 0.2)",
               background: "oklch(82% 0.22 145 / 0.06)",
@@ -228,7 +228,7 @@ export default async function ProofPage({ params }: Props) {
 
         {/* PR info */}
         {challenge && (
-          <div className="px-8 pb-4">
+          <div className="px-5 pb-4 sm:px-8">
             <div
               className="rounded-lg border px-4 py-3"
               style={{ borderColor: "var(--color-border)", background: "var(--color-surface-raised)" }}
@@ -247,7 +247,7 @@ export default async function ProofPage({ params }: Props) {
         )}
 
         {/* Q&A breakdown */}
-        <div className="px-8 py-4">
+        <div className="px-5 py-4 sm:px-8">
           <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--color-text-dim)" }}>
             Challenge breakdown
           </p>
@@ -296,7 +296,7 @@ export default async function ProofPage({ params }: Props) {
 
         {/* Badge preview + copy section */}
         <div
-          className="mx-8 mb-8 mt-4 rounded-xl border p-5"
+          className="mx-5 mb-5 mt-4 rounded-xl border p-4 sm:mx-8 sm:mb-8 sm:p-5"
           style={{ borderColor: "var(--color-border)", background: "var(--color-bg)" }}
         >
           <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--color-neon)" }}>
@@ -311,7 +311,7 @@ export default async function ProofPage({ params }: Props) {
               alt="prs.md proof badge"
               width={480}
               height={140}
-              className="rounded-xl"
+              className="w-full max-w-[480px] h-auto rounded-xl"
             />
           </div>
 

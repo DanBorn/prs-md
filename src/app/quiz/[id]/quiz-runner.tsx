@@ -128,14 +128,14 @@ export function QuizRunner({
         }}
       >
         <div className="h-1" style={{ background: "linear-gradient(90deg, var(--color-accent), var(--color-neon))" }} />
-        <div className="p-8 text-center">
+        <div className="p-5 sm:p-8 text-center">
           <span
             className="inline-flex h-12 w-12 items-center justify-center rounded-xl mb-4 text-lg"
             style={{ background: "var(--color-neon-glow)", color: "var(--color-neon)" }}
           >
             &#9201;
           </span>
-          <h1 className="text-xl font-bold mb-1">{prTitle}</h1>
+          <h1 className="text-lg sm:text-xl font-bold mb-1 break-words">{prTitle}</h1>
           {prRepo && (
             <p className="font-mono text-xs mb-6" style={{ color: "var(--color-text-dim)" }}>
               {prRepo}
@@ -169,7 +169,7 @@ export function QuizRunner({
         }}
       >
         <div className="flex items-center justify-between px-4 py-3">
-          <span className="font-mono text-xs" style={{ color: "var(--color-text-muted)" }}>{prTitle}</span>
+          <span className="font-mono text-xs truncate mr-3" style={{ color: "var(--color-text-muted)" }}>{prTitle}</span>
           <span
             className="font-mono text-xl font-black tabular-nums"
             style={{ color: isUrgent ? "var(--color-danger)" : "var(--color-neon)" }}
@@ -196,7 +196,7 @@ export function QuizRunner({
         {questions.map((q, i) => (
           <div
             key={q.index}
-            className="rounded-xl border p-6"
+            className="rounded-xl border p-4 sm:p-6"
             style={{
               borderColor: "var(--color-border)",
               background: "var(--color-surface)",
