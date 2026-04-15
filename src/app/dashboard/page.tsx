@@ -1,7 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { requireAuth } from "@/lib/require-auth";
 import { db } from "@/db";
 import { apiKeys, challenges, mcpTokens } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
@@ -9,10 +8,7 @@ import { LogoMark } from "@/components/logo";
 import { DashboardLayout } from "./dashboard-layout";
 
 export default async function DashboardPage() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    redirect("/");
-  }
+  const session = await requireAuth();
 
   const keys = await db
     .select({

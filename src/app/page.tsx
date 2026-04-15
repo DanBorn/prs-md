@@ -122,14 +122,19 @@ export default function Home() {
   const { data: session } = useSession();
   const router = useRouter();
 
-  function handleCta() {
+  function handleSignUp() {
     if (session?.user) {
       track("cta_clicked", { action: "dashboard" });
       router.push("/dashboard");
     } else {
-      track("cta_clicked", { action: "sign_in" });
-      signIn("github");
+      track("cta_clicked", { action: "sign_up" });
+      signIn("github", { callbackUrl: "/accept-terms" });
     }
+  }
+
+  function handleSignIn() {
+    track("cta_clicked", { action: "sign_in" });
+    signIn("github", { callbackUrl: "/dashboard" });
   }
 
   return (
@@ -204,18 +209,28 @@ export default function Home() {
           {/* CTA row */}
           <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <button
-              onClick={handleCta}
+              onClick={handleSignUp}
               className="btn-primary group relative overflow-hidden rounded-lg px-8 py-3.5 font-mono text-sm font-bold transition-all"
             >
-              {session?.user ? "Go to Dashboard" : "Sign in with GitHub"}
+              {session?.user ? "Go to Dashboard" : "Create free account"}
               <span className="ml-2 inline-block transition-transform group-hover:translate-x-0.5">&rarr;</span>
             </button>
-            <a
-              href="#how-it-works"
-              className="btn-outline rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all"
-            >
-              How it works
-            </a>
+            {!session?.user && (
+              <button
+                onClick={handleSignIn}
+                className="btn-outline rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all"
+              >
+                Sign in
+              </button>
+            )}
+            {session?.user && (
+              <a
+                href="#how-it-works"
+                className="btn-outline rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all"
+              >
+                How it works
+              </a>
+            )}
           </div>
 
           {/* Works via row */}
@@ -575,13 +590,23 @@ export default function Home() {
             <br />
             Your first verified badge is five minutes away.
           </p>
-          <button
-            onClick={handleCta}
-            className="btn-primary group rounded-lg px-8 py-3.5 font-mono text-sm font-bold transition-all"
-          >
-            {session?.user ? "Go to Dashboard" : "Get started free"}
-            <span className="ml-2 inline-block transition-transform group-hover:translate-x-0.5">&rarr;</span>
-          </button>
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <button
+              onClick={handleSignUp}
+              className="btn-primary group rounded-lg px-8 py-3.5 font-mono text-sm font-bold transition-all"
+            >
+              {session?.user ? "Go to Dashboard" : "Create free account"}
+              <span className="ml-2 inline-block transition-transform group-hover:translate-x-0.5">&rarr;</span>
+            </button>
+            {!session?.user && (
+              <button
+                onClick={handleSignIn}
+                className="btn-outline rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all"
+              >
+                Sign in
+              </button>
+            )}
+          </div>
         </div>
       </section>
 

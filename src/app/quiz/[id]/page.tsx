@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { db } from "@/db";
 import { challenges, attempts } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { requireAuth } from "@/lib/require-auth";
 import { QuizRunner } from "./quiz-runner";
 
 interface Props {
@@ -13,11 +13,7 @@ interface Props {
 
 export default async function QuizPage({ params }: Props) {
   const { id } = await params;
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    redirect("/");
-  }
+  const session = await requireAuth();
 
   const challenge = await db
     .select()

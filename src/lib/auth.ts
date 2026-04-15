@@ -56,8 +56,11 @@ function getInstance(): NextAuthResult {
         async session({ session, user }) {
           if (session.user) {
             session.user.id = user.id;
+            const u = user as { githubUsername?: string; termsAcceptedAt?: Date | null };
             (session.user as { githubUsername?: string }).githubUsername =
-              (user as { githubUsername?: string }).githubUsername ?? undefined;
+              u.githubUsername ?? undefined;
+            (session.user as { termsAcceptedAt?: Date | null }).termsAcceptedAt =
+              u.termsAcceptedAt ?? null;
           }
           return session;
         },
