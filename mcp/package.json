@@ -4,11 +4,14 @@
   "description": "MCP server for prs.md — Turing Test for Pull Requests",
   "type": "module",
   "bin": {
-    "prs-md-mcp": "./dist/index.js"
+    "prs-md-mcp": "dist/index.js"
   },
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsx src/index.ts"
@@ -21,13 +24,21 @@
     "code-review"
   ],
   "license": "MIT",
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.1",
-    "zod": "^4.3.6"
+  "publishConfig": {
+    "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanBorn/prs-md.git",
+    "directory": "mcp"
+  },
+  "homepage": "https://prs.md",
+  "author": "DanBorn",
   "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
     "tsup": "^8.0.0",
     "tsx": "^4.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "zod": "^4.3.6"
   }
 }

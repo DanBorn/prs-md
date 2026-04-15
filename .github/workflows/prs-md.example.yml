@@ -38,13 +38,8 @@ jobs:
   prs-md:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout (for local action)
-        uses: actions/checkout@v4
-
       - name: Run PRs.md
-        uses: ./action
-        # For published action, replace with:
-        # uses: prs-md/action@v1
+        uses: DanBorn/prs-md/action@v1
         with:
           prs-api-key: ${{ secrets.PRS_API_KEY }}
           prs-provider: ${{ secrets.PRS_PROVIDER }}

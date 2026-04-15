@@ -1,5 +1,9 @@
 name: "PRs.md Turing Test"
 description: "Verify PR authors understand their code changes before merging"
+author: "DanBorn"
+branding:
+  icon: check-circle
+  color: green
 
 inputs:
   prs-api-key:

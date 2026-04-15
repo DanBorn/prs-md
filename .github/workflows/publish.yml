@@ -1,0 +1,121 @@
+name: Publish
+
+# Triggered by pushing a version tag, e.g.:
+#   git tag v0.1.0 && git push origin v0.1.0
+#
+# Required GitHub secrets:
+#   NPM_TOKEN  — npm automation token (https://www.npmjs.com/settings/<user>/tokens)
+#               Scope: Automation (works even with 2FA enabled)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write  # needed to create GitHub releases
+
+jobs:
+  # ── Build & publish CLI to npm ────────────────────────────────────
+  publish-cli:
+    name: Publish CLI (prs-md)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cli
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # ── Build & publish MCP server to npm ────────────────────────────
+  publish-mcp:
+    name: Publish MCP server (@prs-md/mcp-server)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # ── Create GitHub release (publishes the action at this tag) ─────
+  release:
+    name: Create GitHub release
+    runs-on: ubuntu-latest
+    needs: [publish-cli, publish-mcp]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = context.ref.replace('refs/tags/', '');
+            const { data: release } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              name: `prs.md ${tag}`,
+              generate_release_notes: true,
+              draft: false,
+              prerelease: tag.includes('-'),
+            });
+            core.notice(`Release created: ${release.html_url}`);
+
+      - name: Update v1 floating tag
+        # Keeps `uses: DanBorn/prs-md/action@v1` always pointing to the
+        # latest stable v1.x.x release. Skip for pre-releases.
+        if: ${{ !contains(github.ref, '-') }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = context.ref.replace('refs/tags/', '');
+            const major = tag.match(/^v(\d+)/)?.[1];
+            if (!major) return;
+            const floatingTag = `v${major}`;
+            try {
+              await github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `tags/${floatingTag}`,
+              });
+            } catch {
+              // Tag didn't exist yet — that's fine
+            }
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${floatingTag}`,
+              sha: context.sha,
+            });
+            core.notice(`Floating tag ${floatingTag} updated to ${context.sha}`);
