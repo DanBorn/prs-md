@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 195 52">
+  <!-- Pill background -->
+  <rect width="195" height="52" rx="26" fill="oklch(13% 0.01 260)"/>
+  <!-- Subtle neon border -->
+  <rect x="1" y="1" width="193" height="50" rx="25" fill="none" stroke="oklch(82% 0.22 145)" stroke-opacity="0.2" stroke-width="1.5"/>
+  <!-- Wordmark — tspans on one line, no whitespace gaps -->
+  <text x="22" y="34" font-family="ui-monospace,'SF Mono','Cascadia Code','Courier New',monospace" font-size="26" font-weight="900"><tspan fill="oklch(45% 0.01 260)">&lt;</tspan><tspan fill="oklch(82% 0.22 145)">PRs</tspan><tspan fill="oklch(60% 0.01 260)">.md</tspan><tspan fill="oklch(45% 0.01 260)">/&gt;</tspan></text>
+</svg>
