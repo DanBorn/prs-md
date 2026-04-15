@@ -4,7 +4,6 @@ import { requireAuth } from "@/lib/require-auth";
 import { db } from "@/db";
 import { apiKeys, challenges, mcpTokens } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
-import { LogoMark } from "@/components/logo";
 import { DashboardLayout } from "./dashboard-layout";
 
 export default async function DashboardPage() {
@@ -42,12 +41,9 @@ export default async function DashboardPage() {
     <div className="mx-auto max-w-5xl px-4 py-10">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 mb-3">
-          <LogoMark />
-          <span className="font-mono text-[10px] uppercase tracking-widest" style={{ color: "var(--color-text-dim)" }}>
-            dashboard
-          </span>
-        </div>
+        <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--color-neon)" }}>
+          Dashboard
+        </p>
         <h1 className="text-2xl font-bold tracking-tight">
           Hey, <span style={{ color: "var(--color-neon)" }}>@{username}</span>
         </h1>
