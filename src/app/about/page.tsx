@@ -2,9 +2,28 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "About — PRs.md",
+  title: "About",
   description:
     "Why PRs.md exists, how it works under the hood, and the principles behind it.",
+  keywords: [
+    "about prs.md",
+    "pull request verification",
+    "AI code review",
+    "developer accountability",
+    "open source",
+  ],
+  openGraph: {
+    title: "About — PRs.md",
+    description:
+      "Why PRs.md exists, how it works under the hood, and the principles behind it.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About — PRs.md",
+    description:
+      "Why PRs.md exists, how it works under the hood, and the principles behind it.",
+  },
 };
 
 const FAQ: { q: string; a: React.ReactNode }[] = [

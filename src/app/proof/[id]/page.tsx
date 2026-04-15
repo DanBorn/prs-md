@@ -27,12 +27,46 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Proof Not Found — prs.md" };
   }
 
+  const username = attempt.userId
+    ? await db
+        .select({ githubUsername: users.githubUsername, name: users.name })
+        .from(users)
+        .where(eq(users.id, attempt.userId))
+        .then((rows) => rows[0])
+    : null;
+  const handle = username?.githubUsername
+    ? `@${username.githubUsername}`
+    : (username?.name ?? "A developer");
+
+  const challenge = await db
+    .select({ prTitle: challenges.prTitle, prRepo: challenges.prRepo })
+    .from(challenges)
+    .where(eq(challenges.id, attempt.challengeId))
+    .then((rows) => rows[0]);
+
+  const score = attempt.totalScore ?? 0;
+  const prTitle = challenge?.prTitle ?? "a pull request";
+  const description = `${handle} scored ${score}/100 on "${prTitle}"${challenge?.prRepo ? ` (${challenge.prRepo})` : ""} — proven to have actually read their own code.`;
+
   return {
-    title: "100% Human Verified — prs.md",
-    description: "This developer proved they understand their own code.",
+    title: `${handle} — 100% Human Verified`,
+    description,
+    keywords: [
+      "human verified",
+      "pull request",
+      "code review proof",
+      "developer verification",
+      "prs.md",
+    ],
     openGraph: {
-      title: "100% Human Verified — prs.md",
-      description: "Turing Test for Pull Requests. This dev passed.",
+      title: `${handle} — 100% Human Verified`,
+      description,
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${handle} — 100% Human Verified`,
+      description,
     },
   };
 }

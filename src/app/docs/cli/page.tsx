@@ -1,7 +1,19 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "CLI — PRs.md Docs",
+  title: "CLI — Docs",
+  description:
+    "Run PRs.md from the terminal. `prs verify <pr-url>` — one command, zero ceremony.",
+  keywords: ["prs.md CLI", "terminal", "command line", "pull request verification"],
+  openGraph: {
+    title: "CLI — PRs.md Docs",
+    description: "Run PRs.md from the terminal. `prs verify <pr-url>` — one command, zero ceremony.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CLI — PRs.md Docs",
+    description: "Run PRs.md from the terminal.",
+  },
 };
 
 export default function CliDocsPage() {

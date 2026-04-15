@@ -4,11 +4,47 @@ import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { challenges, attempts, users } from "@/db/schema";
 import { eq, and, desc } from "drizzle-orm";
+import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { ChallengeView } from "./challenge-view";
 
 interface Props {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const challenge = await db
+    .select()
+    .from(challenges)
+    .where(eq(challenges.id, id))
+    .then((rows) => rows[0]);
+
+  if (!challenge) {
+    return { title: "Challenge Not Found" };
+  }
+
+  const title = challenge.prTitle
+    ? `${challenge.prTitle} — PR Challenge`
+    : "PR Challenge";
+  const description = challenge.prTitle
+    ? `Can you prove you read "${challenge.prTitle}"${challenge.prRepo ? ` (${challenge.prRepo})` : ""}? Answer 3 questions about the diff in 3 minutes.`
+    : "Answer 3 questions about this pull request's diff and prove you actually read the code.";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
 }
 
 export default async function ChallengePage({ params }: Props) {

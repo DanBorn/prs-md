@@ -1,7 +1,19 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Web Dashboard — PRs.md Docs",
+  title: "Web Dashboard — Docs",
+  description:
+    "How to use the PRs.md web dashboard — paste a PR URL, pick your LLM, and take the challenge in your browser.",
+  openGraph: {
+    title: "Web Dashboard — PRs.md Docs",
+    description:
+      "How to use the PRs.md web dashboard — paste a PR URL, pick your LLM, and take the challenge in your browser.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Web Dashboard — PRs.md Docs",
+    description: "How to use the PRs.md web dashboard.",
+  },
 };
 
 export default function WebDocsPage() {

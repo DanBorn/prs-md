@@ -1,8 +1,18 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — PRs.md",
-  description: "Terms of Service for PRs.md.",
+  title: "Terms of Service",
+  description: "Terms of Service for PRs.md — read before creating an account.",
+  openGraph: {
+    title: "Terms of Service — PRs.md",
+    description: "Terms of Service for PRs.md — read before creating an account.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Terms of Service — PRs.md",
+    description: "Terms of Service for PRs.md — read before creating an account.",
+  },
 };
 
 const EFFECTIVE_DATE = "15 April 2026";

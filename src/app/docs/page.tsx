@@ -2,7 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Getting Started — PRs.md Docs",
+  title: "Getting Started — Docs",
+  description:
+    "Get started with PRs.md — web dashboard, CLI, and MCP integration guides.",
+  keywords: ["prs.md docs", "getting started", "pull request verification", "CLI", "MCP"],
+  openGraph: {
+    title: "Getting Started — PRs.md Docs",
+    description:
+      "Get started with PRs.md — web dashboard, CLI, and MCP integration guides.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Getting Started — PRs.md Docs",
+    description: "Get started with PRs.md — web dashboard, CLI, and MCP integration guides.",
+  },
 };
 
 export default function DocsPage() {

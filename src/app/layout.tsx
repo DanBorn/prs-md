@@ -19,9 +19,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PRs.md — Turing Test for Pull Requests",
+  metadataBase: new URL("https://prs.md"),
+  title: {
+    default: "PRs.md — Turing Test for Pull Requests",
+    template: "%s — PRs.md",
+  },
   description:
     "Prove you actually read your own PR. Answer 3 questions about your diff to earn a 100% Human Verified badge.",
+  keywords: [
+    "pull request verification",
+    "code review",
+    "AI code detection",
+    "developer accountability",
+    "PR badge",
+    "GitHub PR",
+    "human verified",
+    "open source",
+    "bring your own key",
+  ],
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
@@ -29,8 +44,17 @@ export const metadata: Metadata = {
   openGraph: {
     title: "PRs.md — Turing Test for Pull Requests",
     description:
-      "Stop AI-generated slop. Prove you understand your own code.",
+      "Stop AI-generated slop. Prove you understand your own code. 3 questions. 3 minutes. One verified badge.",
     type: "website",
+    url: "https://prs.md",
+    siteName: "PRs.md",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PRs.md — Turing Test for Pull Requests",
+    description:
+      "Stop AI-generated slop. Prove you understand your own code. 3 questions. 3 minutes. One verified badge.",
+    site: "@prs_md",
   },
 };
 

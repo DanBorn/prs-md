@@ -1,7 +1,20 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "MCP / IDE — PRs.md Docs",
+  title: "MCP & IDE — Docs",
+  description:
+    "Use PRs.md inside Cursor, Windsurf, or any MCP-compatible editor. Trigger challenges without leaving your IDE.",
+  keywords: ["MCP", "IDE integration", "Cursor", "Windsurf", "Model Context Protocol", "pull request"],
+  openGraph: {
+    title: "MCP & IDE — PRs.md Docs",
+    description:
+      "Use PRs.md inside Cursor, Windsurf, or any MCP-compatible editor.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MCP & IDE — PRs.md Docs",
+    description: "Use PRs.md inside Cursor, Windsurf, or any MCP-compatible editor.",
+  },
 };
 
 export default function McpDocsPage() {
