@@ -1,9 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import { useSession, signIn } from "next-auth/react";
 import { LogoMark } from "./logo";
 
 const GITHUB_URL = "https://github.com/DanBorn/prs-md";
 
 export function Footer() {
+  const { data: session } = useSession();
+
   return (
     <footer
       className="border-t px-4 py-8"
@@ -35,6 +40,23 @@ export function Footer() {
           >
             GitHub &#8599;
           </a>
+          {!session?.user && (
+            <>
+              <span style={{ color: "var(--color-border)" }}>|</span>
+              <button
+                onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+                className="link-dim font-mono text-xs transition-colors"
+              >
+                Sign in
+              </button>
+              <button
+                onClick={() => signIn("github", { callbackUrl: "/accept-terms" })}
+                className="link-neon font-mono text-xs font-medium transition-colors"
+              >
+                Sign up
+              </button>
+            </>
+          )}
         </nav>
       </div>
     </footer>

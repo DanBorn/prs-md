@@ -24,6 +24,7 @@ export const users = pgTable(
     emailVerified: timestamp("emailVerified", { mode: "date" }),
     image: text("image"),
     githubUsername: text("github_username"),
+    termsAcceptedAt: timestamp("terms_accepted_at", { mode: "date" }),
   },
   (t) => [index("users_github_username_idx").on(t.githubUsername)]
 );

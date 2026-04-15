@@ -204,10 +204,16 @@ export function Header() {
                 donate
               </a>
               <button
-                onClick={() => signIn("github")}
-                className="btn-secondary group relative overflow-hidden rounded-md px-4 py-1.5 font-mono text-xs font-bold transition-all"
+                onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+                className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
               >
-                <span className="relative z-10">Sign in with GitHub</span>
+                Sign in
+              </button>
+              <button
+                onClick={() => signIn("github", { callbackUrl: "/accept-terms" })}
+                className="btn-primary rounded-md px-4 py-1.5 font-mono text-xs font-bold transition-all"
+              >
+                Sign up
               </button>
             </>
           )}
