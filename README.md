@@ -1,36 +1,155 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# prs.md
 
-## Getting Started
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org)
+[![Vercel](https://img.shields.io/badge/deploy-Vercel-black)](https://vercel.com)
 
-First, run the development server:
+A "Turing Test for Pull Requests." Paste a GitHub PR URL, answer 3 targeted questions about the diff under a 3-minute timer, and earn a shareable proof badge. Stops unread AI-generated PRs from landing.
+
+**Live demo:** coming soon — self-host in minutes with the guide below.
+
+## How it works
+
+1. Paste a GitHub PR URL
+2. An LLM (your own API key) reads the diff and generates 3 targeted questions + 1 hallucination trap
+3. Answer under a 3-minute timer
+4. LLM grades your answers — pass and get a shareable proof badge + public proof page
+
+No hosted AI cost to the operator. Users bring their own key (OpenAI, Anthropic, or Google Gemini).
+
+## Features
+
+- BYOK (Bring Your Own Key) — supports OpenAI, Anthropic, and Google Gemini
+- 3-minute timed quiz with hallucination trap question
+- Shareable proof badges and public proof pages
+- GitHub OAuth login (minimal scope)
+- CLI tool (`prs-md`) for terminal workflows
+- MCP server for IDE integration (Cursor, Windsurf, etc.)
+- API keys encrypted at rest (AES-256-GCM)
+
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+git clone https://github.com/your-org/prs-cert.git
+cd prs-cert
+cp .env.example .env
+# Edit .env with your values (see Configuration below)
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 20+
+- pnpm
+- A Neon Postgres database (free tier works)
+- A GitHub OAuth App
 
-## Learn More
+## Configuration
 
-To learn more about Next.js, take a look at the following resources:
+Copy `.env.example` to `.env` and fill in:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+cp .env.example .env
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | Yes | Neon Postgres connection string (app role, DML only) |
+| `DATABASE_URL_OWNER` | Yes | Neon Postgres connection string (owner role, for migrations) |
+| `AUTH_SECRET` | Yes | Random secret — `openssl rand -base64 32` |
+| `AUTH_GITHUB_ID` | Yes | GitHub OAuth App client ID |
+| `AUTH_GITHUB_SECRET` | Yes | GitHub OAuth App client secret |
+| `ENCRYPTION_KEY` | Yes | 32-byte base64 key — `openssl rand -base64 32` |
+| `NEXTAUTH_URL` | Yes | Your app's base URL (e.g. `https://yourdomain.com`) |
+| `NEXT_PUBLIC_APP_URL` | Yes | Same as `NEXTAUTH_URL` |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | No | Google Analytics measurement ID |
+| `NEXT_PUBLIC_MIXPANEL_TOKEN` | No | Mixpanel project token |
+| `NEXT_PUBLIC_SENTRY_DSN` | No | Sentry DSN for error tracking |
 
-## Deploy on Vercel
+### GitHub OAuth App
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Go to GitHub Settings > Developer settings > OAuth Apps > New OAuth App
+2. Set **Authorization callback URL** to `https://yourdomain.com/api/auth/callback/github`
+3. Copy the Client ID and Client Secret into `.env`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Database Setup
+
+This project uses [Neon](https://neon.tech) (serverless Postgres). The free tier is enough.
+
+```bash
+# After creating your Neon project and filling in DATABASE_URL_OWNER:
+npx drizzle-kit push
+```
+
+The schema uses two roles:
+- `neondb_owner` — DDL only, used by migrations
+- `prs_app` — DML only (SELECT/INSERT/UPDATE/DELETE), used at runtime
+
+See `src/db/schema.ts` for the full schema.
+
+## Development
+
+```bash
+pnpm dev              # Start dev server on :3000
+pnpm build            # Production build
+pnpm lint             # ESLint
+pnpm test             # Run tests (vitest)
+pnpm test:coverage    # Tests with coverage report
+npx drizzle-kit push  # Push schema changes to Neon
+npx drizzle-kit studio  # Open Drizzle Studio (DB browser)
+```
+
+## CLI
+
+The `prs-md` CLI lets developers verify a PR directly from the terminal.
+
+```bash
+npx prs-md verify https://github.com/org/repo/pull/123
+```
+
+See [`cli/`](cli/) for source and build instructions.
+
+## MCP Server
+
+An MCP (Model Context Protocol) server is included for IDE integration (Cursor, Windsurf, Claude Desktop, etc.).
+
+```bash
+# Add to your MCP config:
+{
+  "mcpServers": {
+    "prs-md": {
+      "command": "npx",
+      "args": ["@prs-md/mcp-server"]
+    }
+  }
+}
+```
+
+See [`mcp/`](mcp/) for source and configuration details.
+
+## Deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-org/prs-cert)
+
+1. Click the button above or import the repo in the Vercel dashboard
+2. Add all required environment variables from `.env.example`
+3. Deploy — Vercel sets `VERCEL_URL` automatically; set `NEXT_PUBLIC_APP_URL` to your custom domain
+
+## Using with Claude Code
+
+This project includes a `CLAUDE.md` that gives Claude Code full context about the architecture, database setup, and commands.
+
+```bash
+claude    # Start Claude Code — reads CLAUDE.md automatically
+```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+MIT — see [LICENSE](LICENSE)
