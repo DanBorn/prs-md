@@ -2,11 +2,12 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
 /**
- * Returns true when Upstash credentials are present.
- * When false every limiter returns a synthetic pass — safe for local dev and CI.
+ * Returns true when Upstash credentials look valid enough to use.
+ * Requires a well-formed https:// URL so the @upstash/redis constructor
+ * never throws a UrlError and crashes the Edge middleware.
  */
 export const rateLimitEnabled = !!(
-  process.env.UPSTASH_REDIS_REST_URL &&
+  process.env.UPSTASH_REDIS_REST_URL?.startsWith("https://") &&
   process.env.UPSTASH_REDIS_REST_TOKEN
 );
 
@@ -38,12 +39,17 @@ function makeLimiter(
   prefix: string
 ) {
   if (!rateLimitEnabled) return passthrough;
-  return new Ratelimit({
-    redis: makeRedis(),
-    limiter: Ratelimit.slidingWindow(requests, window),
-    prefix,
-    analytics: false,
-  });
+  try {
+    return new Ratelimit({
+      redis: makeRedis(),
+      limiter: Ratelimit.slidingWindow(requests, window),
+      prefix,
+      analytics: false,
+    });
+  } catch {
+    // Bad credentials at init time — degrade gracefully rather than crash middleware
+    return passthrough;
+  }
 }
 
 /**

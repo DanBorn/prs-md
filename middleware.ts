@@ -39,7 +39,15 @@ export async function middleware(req: NextRequest) {
     limiter = generalLimiter;
   }
 
-  const { success, limit, remaining, reset } = await limiter.limit(ip);
+  let result: { success: boolean; limit: number; remaining: number; reset: number };
+  try {
+    result = await limiter.limit(ip);
+  } catch {
+    // Redis call failed at runtime — pass through rather than block all traffic
+    return NextResponse.next();
+  }
+
+  const { success, limit, remaining, reset } = result;
 
   if (!success) {
     return NextResponse.json(
