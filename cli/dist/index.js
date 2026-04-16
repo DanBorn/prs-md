@@ -120,9 +120,20 @@ function badgeBlock(proofUrl) {
 // src/github.ts
 var MAX_DIFF_CHARS = 12e3;
 function parsePrUrl(url) {
-  const match = url.match(/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/);
-  if (!match) return null;
-  return { owner: match[1], repo: match[2], pull: parseInt(match[3], 10) };
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  if (parsed.hostname !== "github.com") return null;
+  const parts = parsed.pathname.split("/");
+  if (parts.length < 5 || parts[3] !== "pull") return null;
+  const owner = parts[1];
+  const repo = parts[2];
+  const pullStr = parts[4];
+  if (!owner || !repo || !/^\d+$/.test(pullStr)) return null;
+  return { owner, repo, pull: parseInt(pullStr, 10) };
 }
 async function fetchPr(owner, repo, pull) {
   const headers = { "User-Agent": "prs-md-cli" };
@@ -235,10 +246,13 @@ async function callLlm(provider, apiKey, system, user) {
     }
     case "gemini": {
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": apiKey
+          },
           body: JSON.stringify({
             contents: [{ parts: [{ text: `${system}
 
@@ -587,6 +601,25 @@ async function main() {
     if (apiKey.startsWith("sk-ant-")) provider = "anthropic";
     else if (apiKey.startsWith("sk-")) provider = "openai";
     else if (apiKey.startsWith("AI")) provider = "gemini";
+  }
+  if ((!provider || !apiKey) && storedAuth?.githubToken) {
+    try {
+      const keysRes = await fetch("https://prs.md/api/cli/keys", {
+        headers: { Authorization: `Bearer ${storedAuth.githubToken}` }
+      });
+      if (keysRes.ok) {
+        const keysData = await keysRes.json();
+        if (keysData.keys.length > 0) {
+          const match = provider ? keysData.keys.find((k) => k.provider === provider) : keysData.keys[0];
+          if (match) {
+            provider = match.provider;
+            apiKey = match.apiKey;
+            console.log(`  ${c.neon("\u2713")} Using saved ${c.bold(provider)} key from prs.md`);
+          }
+        }
+      }
+    } catch {
+    }
   }
   if (!provider || !apiKey) {
     const rl = readline2.createInterface({ input: stdin2, output: stdout2 });

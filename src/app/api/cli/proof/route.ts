@@ -2,8 +2,8 @@ export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { users, challenges, attempts } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { users, accounts, challenges, attempts } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 import { customAlphabet } from "nanoid";
 import { trackServer } from "@/lib/mixpanel-server";
 
@@ -115,6 +115,7 @@ export async function POST(req: NextRequest) {
 
   // Verify GitHub identity if token provided
   let verifiedUsername: string | null = null;
+  let verifiedGithubId: string | null = null;
 
   if (githubToken) {
     try {
@@ -126,8 +127,9 @@ export async function POST(req: NextRequest) {
       });
 
       if (ghRes.ok) {
-        const ghUser = (await ghRes.json()) as { login: string };
+        const ghUser = (await ghRes.json()) as { login: string; id: number };
         verifiedUsername = ghUser.login;
+        verifiedGithubId = String(ghUser.id);
       }
     } catch {
       // Token verification failed — proceed as anonymous
@@ -138,12 +140,36 @@ export async function POST(req: NextRequest) {
   let user;
 
   if (verifiedUsername) {
-    // Authenticated — link to existing account or create one
-    user = await db
-      .select()
-      .from(users)
-      .where(eq(users.githubUsername, verifiedUsername))
-      .then((rows) => rows[0]);
+    // Primary: match by GitHub account ID (reliable even if githubUsername not yet set)
+    if (verifiedGithubId) {
+      const accountRow = await db
+        .select({ userId: accounts.userId })
+        .from(accounts)
+        .where(
+          and(
+            eq(accounts.provider, "github"),
+            eq(accounts.providerAccountId, verifiedGithubId)
+          )
+        )
+        .then((rows) => rows[0]);
+
+      if (accountRow) {
+        user = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, accountRow.userId))
+          .then((rows) => rows[0]);
+      }
+    }
+
+    // Fallback: match by githubUsername
+    if (!user) {
+      user = await db
+        .select()
+        .from(users)
+        .where(eq(users.githubUsername, verifiedUsername))
+        .then((rows) => rows[0]);
+    }
 
     if (!user) {
       const inserted = await db
@@ -179,6 +205,7 @@ export async function POST(req: NextRequest) {
     prRepo,
     questions,
     status: "completed",
+    source: "cli",
     timeLimitSeconds: 180,
   });
 

@@ -115,7 +115,7 @@ export const mcpTokens = pgTable(
 );
 
 export type ChallengeStatus = "pending" | "active" | "completed" | "expired";
-export type ChallengeSource = "web" | "action" | "mcp";
+export type ChallengeSource = "web" | "action" | "mcp" | "cli";
 
 export interface ChallengeQuestion {
   question: string;

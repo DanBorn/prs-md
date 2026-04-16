@@ -197,7 +197,32 @@ async function main(): Promise<void> {
     else if (apiKey.startsWith("AI")) provider = "gemini";
   }
 
-  // Interactive prompt if not provided
+  // Fetch saved keys from prs.md when logged in and no key resolved yet
+  if ((!provider || !apiKey) && storedAuth?.githubToken) {
+    try {
+      const keysRes = await fetch("https://prs.md/api/cli/keys", {
+        headers: { Authorization: `Bearer ${storedAuth.githubToken}` },
+      });
+      if (keysRes.ok) {
+        const keysData = (await keysRes.json()) as { keys: Array<{ provider: string; apiKey: string }> };
+        if (keysData.keys.length > 0) {
+          // Pick the first available key, preferring provider already selected
+          const match = provider
+            ? keysData.keys.find((k) => k.provider === provider)
+            : keysData.keys[0];
+          if (match) {
+            provider = match.provider as AiProvider;
+            apiKey = match.apiKey;
+            console.log(`  ${c.neon("✓")} Using saved ${c.bold(provider)} key from prs.md`);
+          }
+        }
+      }
+    } catch {
+      // Server unreachable — fall through to interactive prompt
+    }
+  }
+
+  // Interactive prompt if still not resolved
   if (!provider || !apiKey) {
     const rl = readline.createInterface({ input: stdin, output: stdout });
 
