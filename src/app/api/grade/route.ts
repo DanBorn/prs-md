@@ -5,6 +5,7 @@ import { apiKeys, challenges, attempts, users } from "@/db/schema";
 import { eq, and, count } from "drizzle-orm";
 import { decrypt } from "@/lib/crypto";
 import { gradeAnswers } from "@/lib/llm";
+import { trackServer } from "@/lib/mixpanel-server";
 
 const PASS_THRESHOLD = 70;
 
@@ -208,6 +209,14 @@ export async function POST(req: NextRequest) {
       console.error("Failed to fire callback:", err)
     );
 
+    trackServer("quiz_attempt", session.user.id, {
+      source: "action",
+      passed: null,
+      total_score: null,
+      attempt_number: attemptNumber,
+      time_spent_seconds: timeSpentSeconds ?? null,
+    });
+
     return NextResponse.json({
       attemptId: attempt[0].id,
       status: "grading",
@@ -281,6 +290,22 @@ export async function POST(req: NextRequest) {
       gradingFeedback: gradeResult.feedback,
     })
     .returning();
+
+  trackServer("quiz_attempt", session.user.id, {
+    source: challenge.source ?? "web",
+    passed,
+    total_score: totalScore,
+    attempt_number: attemptNumber,
+    time_spent_seconds: timeSpentSeconds ?? null,
+  });
+
+  if (passed) {
+    trackServer("challenge_passed", session.user.id, {
+      source: challenge.source ?? "web",
+      total_score: totalScore,
+      time_spent_seconds: timeSpentSeconds ?? null,
+    });
+  }
 
   return NextResponse.json({
     attemptId: attempt[0].id,

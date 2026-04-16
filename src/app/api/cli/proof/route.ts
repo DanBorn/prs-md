@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { users, challenges, attempts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { customAlphabet } from "nanoid";
+import { trackServer } from "@/lib/mixpanel-server";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 10);
 
@@ -197,6 +198,19 @@ export async function POST(req: NextRequest) {
     .returning();
 
   const proofId = attempt[0].id;
+
+  trackServer("challenge_created", user.id, {
+    source: "cli",
+    is_authenticated: verifiedUsername !== null,
+  });
+
+  trackServer("challenge_passed", user.id, {
+    source: "cli",
+    total_score: totalScore,
+    time_spent_seconds: typeof timeSpentSeconds === "number" ? timeSpentSeconds : null,
+    is_authenticated: verifiedUsername !== null,
+  });
+
   const baseUrl = process.env.NEXTAUTH_URL ?? "https://prs.md";
 
   return NextResponse.json({

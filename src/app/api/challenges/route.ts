@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { decrypt, decryptToken } from "@/lib/crypto";
 import { parsePrUrl, fetchPrDiff } from "@/lib/github";
 import { generateQuestions } from "@/lib/llm";
+import { trackServer } from "@/lib/mixpanel-server";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -118,6 +119,12 @@ export async function POST(req: NextRequest) {
     prRepo: `${parsed.owner}/${parsed.repo}`,
     questions,
     status: "active",
+  });
+
+  trackServer("challenge_created", session.user.id, {
+    source: "web",
+    provider: keyRow.provider,
+    repo: `${parsed.owner}/${parsed.repo}`,
   });
 
   return NextResponse.json({ id, success: true });

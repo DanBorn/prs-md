@@ -40,7 +40,6 @@ export function QuizRunner({
 
     const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
     const answersToSubmit = finalAnswers ?? answers;
-    track("quiz_submitted", { challenge_id: challengeId, time_spent_seconds: elapsed });
 
     try {
       const res = await fetch("/api/grade", {

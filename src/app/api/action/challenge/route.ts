@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { challenges } from "@/db/schema";
 import type { ChallengeQuestion } from "@/db/schema";
 import { encrypt } from "@/lib/crypto";
+import { trackServer } from "@/lib/mixpanel-server";
 
 interface ActionChallengeBody {
   prUrl: string;
@@ -83,6 +84,11 @@ export async function POST(req: NextRequest) {
     callbackTokenEncrypted: encrypted.encrypted,
     callbackTokenIv: encrypted.iv,
     callbackTokenAuthTag: encrypted.authTag,
+  });
+
+  trackServer("challenge_created", "github-action", {
+    source: "action",
+    repo: prRepo,
   });
 
   const serverUrl =

@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { track } from "@/lib/analytics";
 
 export function ChallengeCreator() {
   const router = useRouter();
@@ -30,7 +29,6 @@ export function ChallengeCreator() {
         setError(data.error ?? "Failed to generate challenge.");
         return;
       }
-      track("challenge_created");
       startTransition(() => { router.push(`/challenge/${data.id}`); });
     } catch {
       setError("Network error. Please try again.");

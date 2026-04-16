@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { challenges, attempts } from "@/db/schema";
 import type { ChallengeQuestion } from "@/db/schema";
 import { customAlphabet } from "nanoid";
+import { trackServer } from "@/lib/mixpanel-server";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 10);
 const PASS_THRESHOLD = 70;
@@ -113,6 +114,21 @@ export async function POST(req: NextRequest) {
       gradingFeedback: gradeResult.feedback,
     })
     .returning();
+
+  trackServer("quiz_attempt", mcpUser.id, {
+    source: "mcp",
+    passed,
+    total_score: totalScore,
+    time_spent_seconds: timeSpentSeconds ?? null,
+  });
+
+  if (passed) {
+    trackServer("challenge_passed", mcpUser.id, {
+      source: "mcp",
+      total_score: totalScore,
+      time_spent_seconds: timeSpentSeconds ?? null,
+    });
+  }
 
   const baseUrl = process.env.NEXTAUTH_URL ?? "https://prs.md";
   const proofUrl = passed ? `${baseUrl}/proof/${attempt[0].id}` : null;

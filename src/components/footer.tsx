@@ -32,6 +32,9 @@ export function Footer() {
           <Link href="/terms" className="link-dim font-mono text-xs transition-colors">
             terms
           </Link>
+          <Link href="/cookies" className="link-dim font-mono text-xs transition-colors">
+            cookies
+          </Link>
           <a
             href={GITHUB_URL}
             target="_blank"
