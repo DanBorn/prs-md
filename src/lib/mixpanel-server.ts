@@ -26,10 +26,10 @@ export function trackServer(
   event: string,
   distinctId: string,
   properties?: ServerEventProperties
-): void {
+): Promise<void> {
   const token =
     process.env.MIXPANEL_TOKEN ?? process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
-  if (!token) return;
+  if (!token) return Promise.resolve();
 
   const payload = [
     {
@@ -45,12 +45,15 @@ export function trackServer(
     },
   ];
 
-  // Fire and forget — never await, never throw
-  fetch(MP_ENDPOINT, {
+  // Return the promise so callers can pass it to after() and ensure
+  // Vercel keeps the function alive until the request completes.
+  return fetch(MP_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
-  }).catch(() => {
-    // Swallow — analytics failures must never surface to users
-  });
+  })
+    .then(() => {})
+    .catch(() => {
+      // Swallow — analytics failures must never surface to users
+    });
 }

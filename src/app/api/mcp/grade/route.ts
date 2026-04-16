@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { resolveTokenUser } from "@/lib/mcp-auth";
 import { gradeAnswers } from "@/lib/llm";
 import { db } from "@/db";
@@ -115,19 +115,23 @@ export async function POST(req: NextRequest) {
     })
     .returning();
 
-  trackServer("quiz_attempt", mcpUser.id, {
-    source: "mcp",
-    passed,
-    total_score: totalScore,
-    time_spent_seconds: timeSpentSeconds ?? null,
-  });
-
-  if (passed) {
-    trackServer("challenge_passed", mcpUser.id, {
+  after(() =>
+    trackServer("quiz_attempt", mcpUser.id, {
       source: "mcp",
+      passed,
       total_score: totalScore,
       time_spent_seconds: timeSpentSeconds ?? null,
-    });
+    })
+  );
+
+  if (passed) {
+    after(() =>
+      trackServer("challenge_passed", mcpUser.id, {
+        source: "mcp",
+        total_score: totalScore,
+        time_spent_seconds: timeSpentSeconds ?? null,
+      })
+    );
   }
 
   const baseUrl = process.env.NEXTAUTH_URL ?? "https://prs.md";

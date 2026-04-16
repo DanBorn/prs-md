@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { nanoid } from "nanoid";
 import { db } from "@/db";
@@ -86,10 +86,12 @@ export async function POST(req: NextRequest) {
     callbackTokenAuthTag: encrypted.authTag,
   });
 
-  trackServer("challenge_created", "github-action", {
-    source: "action",
-    repo: prRepo,
-  });
+  after(() =>
+    trackServer("challenge_created", "github-action", {
+      source: "action",
+      repo: prRepo,
+    })
+  );
 
   const serverUrl =
     process.env.NEXT_PUBLIC_APP_URL ??

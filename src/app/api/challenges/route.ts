@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { nanoid } from "nanoid";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
@@ -110,10 +110,11 @@ export async function POST(req: NextRequest) {
   }
 
   // Save challenge
+  const userId = session.user.id as string;
   const id = nanoid(10);
   await db.insert(challenges).values({
     id,
-    creatorId: session.user.id,
+    creatorId: userId,
     prUrl,
     prTitle: title,
     prRepo: `${parsed.owner}/${parsed.repo}`,
@@ -121,11 +122,13 @@ export async function POST(req: NextRequest) {
     status: "active",
   });
 
-  trackServer("challenge_created", session.user.id, {
-    source: "web",
-    provider: keyRow.provider,
-    repo: `${parsed.owner}/${parsed.repo}`,
-  });
+  after(() =>
+    trackServer("challenge_created", userId, {
+      source: "web",
+      provider: keyRow.provider,
+      repo: `${parsed.owner}/${parsed.repo}`,
+    })
+  );
 
   return NextResponse.json({ id, success: true });
 }

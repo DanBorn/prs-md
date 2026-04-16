@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { db } from "@/db";
 import { users, accounts, challenges, attempts } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -226,17 +226,21 @@ export async function POST(req: NextRequest) {
 
   const proofId = attempt[0].id;
 
-  trackServer("challenge_created", user.id, {
-    source: "cli",
-    is_authenticated: verifiedUsername !== null,
-  });
+  after(() =>
+    trackServer("challenge_created", user.id, {
+      source: "cli",
+      is_authenticated: verifiedUsername !== null,
+    })
+  );
 
-  trackServer("challenge_passed", user.id, {
-    source: "cli",
-    total_score: totalScore,
-    time_spent_seconds: typeof timeSpentSeconds === "number" ? timeSpentSeconds : null,
-    is_authenticated: verifiedUsername !== null,
-  });
+  after(() =>
+    trackServer("challenge_passed", user.id, {
+      source: "cli",
+      total_score: totalScore,
+      time_spent_seconds: typeof timeSpentSeconds === "number" ? timeSpentSeconds : null,
+      is_authenticated: verifiedUsername !== null,
+    })
+  );
 
   const baseUrl = process.env.NEXTAUTH_URL ?? "https://prs.md";
 

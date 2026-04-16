@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { apiKeys, challenges, attempts, users } from "@/db/schema";
@@ -79,6 +79,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const userId = session.user.id as string;
+
   const body = await req.json();
   const { challengeId, answers, timeSpentSeconds } = body as {
     challengeId: string;
@@ -115,7 +117,7 @@ export async function POST(req: NextRequest) {
     .where(
       and(
         eq(attempts.challengeId, challengeId),
-        eq(attempts.userId, session.user.id),
+        eq(attempts.userId, userId),
         eq(attempts.passed, true)
       )
     )
@@ -136,7 +138,7 @@ export async function POST(req: NextRequest) {
     .where(
       and(
         eq(attempts.challengeId, challengeId),
-        eq(attempts.userId, session.user.id)
+        eq(attempts.userId, userId)
       )
     );
 
@@ -181,7 +183,7 @@ export async function POST(req: NextRequest) {
       .insert(attempts)
       .values({
         challengeId,
-        userId: session.user.id,
+        userId: userId,
         answers,
         scores: null,
         totalScore: null,
@@ -196,7 +198,7 @@ export async function POST(req: NextRequest) {
     const quizUser = await db
       .select({ githubUsername: users.githubUsername })
       .from(users)
-      .where(eq(users.id, session.user.id))
+      .where(eq(users.id, userId))
       .then((rows) => rows[0]);
 
     // Fire repository_dispatch (non-blocking — don't fail the request if it errors)
@@ -209,13 +211,15 @@ export async function POST(req: NextRequest) {
       console.error("Failed to fire callback:", err)
     );
 
-    trackServer("quiz_attempt", session.user.id, {
-      source: "action",
-      passed: null,
-      total_score: null,
-      attempt_number: attemptNumber,
-      time_spent_seconds: timeSpentSeconds ?? null,
-    });
+    after(() =>
+      trackServer("quiz_attempt", userId, {
+        source: "action",
+        passed: null,
+        total_score: null,
+        attempt_number: attemptNumber,
+        time_spent_seconds: timeSpentSeconds ?? null,
+      })
+    );
 
     return NextResponse.json({
       attemptId: attempt[0].id,
@@ -280,7 +284,7 @@ export async function POST(req: NextRequest) {
     .insert(attempts)
     .values({
       challengeId,
-      userId: session.user.id,
+      userId: userId,
       answers,
       scores: gradeResult.scores,
       totalScore,
@@ -291,20 +295,24 @@ export async function POST(req: NextRequest) {
     })
     .returning();
 
-  trackServer("quiz_attempt", session.user.id, {
-    source: challenge.source ?? "web",
-    passed,
-    total_score: totalScore,
-    attempt_number: attemptNumber,
-    time_spent_seconds: timeSpentSeconds ?? null,
-  });
+  after(() =>
+    trackServer("quiz_attempt", userId, {
+      source: challenge.source ?? "web",
+      passed,
+      total_score: totalScore,
+      attempt_number: attemptNumber,
+      time_spent_seconds: timeSpentSeconds ?? null,
+    })
+  );
 
   if (passed) {
-    trackServer("challenge_passed", session.user.id, {
-      source: challenge.source ?? "web",
-      total_score: totalScore,
-      time_spent_seconds: timeSpentSeconds ?? null,
-    });
+    after(() =>
+      trackServer("challenge_passed", userId, {
+        source: challenge.source ?? "web",
+        total_score: totalScore,
+        time_spent_seconds: timeSpentSeconds ?? null,
+      })
+    );
   }
 
   return NextResponse.json({
