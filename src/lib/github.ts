@@ -42,6 +42,10 @@ export async function fetchPrDiff(
     { headers: { ...headers, Accept: "application/vnd.github.v3.diff" } }
   );
   if (!diffRes.ok) {
+    // Stored GitHub token is expired/revoked — retry unauthenticated (works for public PRs)
+    if (diffRes.status === 401 && accessToken) {
+      return fetchPrDiff(owner, repo, pull, undefined);
+    }
     throw new Error(`GitHub API error: ${diffRes.status} ${diffRes.statusText}`);
   }
   const diff = await diffRes.text();
