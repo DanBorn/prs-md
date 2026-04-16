@@ -2,8 +2,8 @@ export const dynamic = "force-dynamic";
 
 import { requireAuth } from "@/lib/require-auth";
 import { db } from "@/db";
-import { apiKeys, challenges, mcpTokens } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { apiKeys, attempts, challenges, mcpTokens } from "@/db/schema";
+import { eq, desc, inArray, and } from "drizzle-orm";
 import { DashboardLayout } from "./dashboard-layout";
 
 export default async function DashboardPage() {
@@ -24,6 +24,31 @@ export default async function DashboardPage() {
     .where(eq(challenges.creatorId, session.user.id))
     .orderBy(desc(challenges.createdAt))
     .limit(20);
+
+  // Fetch the user's best attempt per challenge (prefer passed over failed)
+  const challengeIds = userChallenges.map((c) => c.id);
+  const attemptMap: Record<string, boolean | null> = {};
+  if (challengeIds.length > 0) {
+    const userAttempts = await db
+      .select({ challengeId: attempts.challengeId, passed: attempts.passed })
+      .from(attempts)
+      .where(
+        and(
+          inArray(attempts.challengeId, challengeIds),
+          eq(attempts.userId, session.user.id)
+        )
+      );
+    for (const attempt of userAttempts) {
+      if (!(attempt.challengeId in attemptMap) || attempt.passed === true) {
+        attemptMap[attempt.challengeId] = attempt.passed ?? null;
+      }
+    }
+  }
+
+  const challengesWithAttempts = userChallenges.map((c) => ({
+    ...c,
+    attemptPassed: attemptMap[c.id] ?? null,
+  }));
 
   const tokens = await db
     .select({ id: mcpTokens.id })
@@ -54,7 +79,7 @@ export default async function DashboardPage() {
 
       <DashboardLayout
         existingKeys={keys}
-        challenges={userChallenges}
+        challenges={challengesWithAttempts}
         hasApiKey={hasApiKey}
         hasMcpToken={hasMcpToken}
       />

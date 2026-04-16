@@ -24,6 +24,7 @@ interface Challenge {
   prRepo: string | null;
   status: ChallengeStatus;
   createdAt: Date;
+  attemptPassed: boolean | null;
 }
 
 const NAV_ITEMS: {

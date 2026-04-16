@@ -23,6 +23,7 @@ interface Challenge {
   prRepo: string | null;
   status: ChallengeStatus;
   createdAt: Date;
+  attemptPassed: boolean | null;
 }
 
 const TABS: { id: Tab; label: string; icon: string; description: string }[] = [

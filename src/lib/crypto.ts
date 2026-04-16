@@ -66,17 +66,38 @@ export function encryptToken(plaintext: string): string {
  *  - Encrypted: JSON string with { encrypted, iv, authTag } — decrypt and return
  *  - Legacy plaintext: return as-is (rows written before encryption was added)
  *
- * Returns null for null/undefined/empty input.
+ * Returns null for null/undefined/empty input, or if decryption fails
+ * (so callers never receive raw ciphertext by mistake).
  */
 export function decryptToken(stored: string | null | undefined): string | null {
   if (!stored) return null;
+
+  // Step 1: try to parse as JSON. If it fails, it's a legacy plaintext token.
+  let parsed: unknown;
   try {
-    const parsed = JSON.parse(stored) as Partial<EncryptedData>;
-    if (parsed.encrypted && parsed.iv && parsed.authTag) {
-      return decrypt(parsed as EncryptedData);
-    }
+    parsed = JSON.parse(stored);
   } catch {
-    // Not JSON — legacy plaintext token, return as-is
+    return stored; // legacy plaintext — return as-is
   }
+
+  // Step 2: if the JSON has our encrypted-token shape, decrypt it.
+  if (
+    parsed !== null &&
+    typeof parsed === "object" &&
+    "encrypted" in parsed &&
+    "iv" in parsed &&
+    "authTag" in parsed
+  ) {
+    try {
+      return decrypt(parsed as EncryptedData);
+    } catch {
+      // Decryption failed (wrong key, corrupted data).
+      // Return null so callers skip the token rather than sending ciphertext to GitHub.
+      console.error("[decryptToken] Failed to decrypt OAuth token — token will not be used");
+      return null;
+    }
+  }
+
+  // Valid JSON but not our format — shouldn't happen in practice.
   return stored;
 }
