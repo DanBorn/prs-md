@@ -5,6 +5,7 @@ import { generateQuestions, gradeAnswers } from "./llm.mjs";
 const PRS_API_KEY = process.env.PRS_API_KEY;
 const PRS_PROVIDER = process.env.PRS_PROVIDER;
 const PRS_CALLBACK_TOKEN = process.env.PRS_CALLBACK_TOKEN;
+const PRS_ACTION_SECRET = process.env.PRS_ACTION_SECRET;
 const PRS_SERVER_URL = (process.env.PRS_SERVER_URL ?? "https://prs.md").replace(
   /\/$/,
   ""
@@ -68,7 +69,10 @@ async function handlePullRequest() {
   log(`Creating challenge on ${PRS_SERVER_URL}...`);
   const res = await fetch(`${PRS_SERVER_URL}/api/action/challenge`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-action-secret": PRS_ACTION_SECRET ?? "",
+    },
     body: JSON.stringify({
       prUrl,
       prTitle: title,

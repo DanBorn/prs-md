@@ -16,6 +16,9 @@ inputs:
   prs-callback-token:
     description: "GitHub PAT for callback (fine-grained, contents:write on this repo)"
     required: true
+  prs-action-secret:
+    description: "Shared secret for authenticating with the PRs.md server (ACTION_SECRET)"
+    required: true
   prs-server-url:
     description: "PRs.md server URL"
     required: false
@@ -31,5 +34,6 @@ runs:
         PRS_API_KEY: ${{ inputs.prs-api-key }}
         PRS_PROVIDER: ${{ inputs.prs-provider }}
         PRS_CALLBACK_TOKEN: ${{ inputs.prs-callback-token }}
+        PRS_ACTION_SECRET: ${{ inputs.prs-action-secret }}
         PRS_SERVER_URL: ${{ inputs.prs-server-url }}
         GITHUB_TOKEN: ${{ github.token }}
