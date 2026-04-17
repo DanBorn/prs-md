@@ -73,6 +73,12 @@ export const llmLimiter = makeLimiter(30, "10 m", "rl:llm");
 export const authLimiter = makeLimiter(20, "1 m", "rl:auth");
 
 /**
+ * /api/action/challenge — each request hits the GitHub API to validate the PAT.
+ * 20 requests per IP per 10 minutes.
+ */
+export const actionChallengeLimiter = makeLimiter(20, "10 m", "rl:action-challenge");
+
+/**
  * General fallback for all other API routes.
  * 100 requests per IP per minute.
  */
