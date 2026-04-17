@@ -10,6 +10,7 @@ import { ChallengeView } from "./challenge-view";
 
 interface Props {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ grading?: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -47,8 +48,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ChallengePage({ params }: Props) {
+export default async function ChallengePage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { grading } = await searchParams;
+  const gradingPending = grading === "pending";
 
   const challenge = await db
     .select()
@@ -109,6 +112,7 @@ export default async function ChallengePage({ params }: Props) {
         attemptPassed={latestAttempt?.passed ?? null}
         attemptId={latestAttempt?.id ?? null}
         attemptCount={attemptCount}
+        gradingPending={gradingPending && latestAttempt?.passed === null}
       />
     </div>
   );

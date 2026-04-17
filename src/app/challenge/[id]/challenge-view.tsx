@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import type { ChallengeStatus } from "@/db/schema";
 import { LogoMark } from "@/components/logo";
@@ -30,6 +32,7 @@ export function ChallengeView({
   attemptPassed,
   attemptId,
   attemptCount,
+  gradingPending,
 }: {
   challenge: ChallengeInfo;
   creator: Creator | null;
@@ -38,7 +41,16 @@ export function ChallengeView({
   attemptPassed: boolean | null;
   attemptId: string | null;
   attemptCount: number;
+  gradingPending?: boolean;
 }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!gradingPending) return;
+    const interval = setInterval(() => router.refresh(), 3000);
+    return () => clearInterval(interval);
+  }, [gradingPending, router]);
+
   return (
     <div>
       {isAuthenticated && (
@@ -166,6 +178,15 @@ export function ChallengeView({
               >
                 Sign in with GitHub to take the challenge
               </button>
+            ) : hasAttempted && gradingPending ? (
+              <div className="rounded-xl border p-4" style={{ borderColor: "oklch(78% 0.16 250 / 0.2)", background: "oklch(78% 0.16 250 / 0.05)" }}>
+                <p className="font-mono text-sm font-bold" style={{ color: "var(--color-accent)" }}>
+                  &#8987; Grading in progress&hellip;
+                </p>
+                <p className="text-xs mt-1" style={{ color: "var(--color-text-muted)" }}>
+                  The GitHub Action is grading your answers. This page will update automatically.
+                </p>
+              </div>
             ) : hasAttempted ? (
               <div className="space-y-3">
                 <div className="rounded-xl border p-4" style={{ borderColor: "oklch(65% 0.22 25 / 0.2)", background: "oklch(65% 0.22 25 / 0.05)" }}>
