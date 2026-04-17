@@ -1,6 +1,6 @@
 {
   "name": "prs-md",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Turing Test for Pull Requests — prove you wrote your own code",
   "type": "module",
   "bin": {
