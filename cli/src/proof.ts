@@ -2,7 +2,7 @@
 
 import type { ChallengeQuestion } from "./llm.js";
 
-const API_BASE = process.env.PRS_API_URL ?? "https://prs.md";
+const API_BASE = process.env.PRS_API_URL ?? "https://www.prs.md";
 
 export interface ProofPayload {
   githubUsername: string | null;
@@ -17,11 +17,15 @@ export interface ProofPayload {
   passed: boolean;
   timeSpentSeconds: number;
   gradingFeedback: string[];
+  challengeId?: string;
 }
 
 export interface ProofResponse {
   proofId: string;
   proofUrl: string;
+  challengeId?: string;
+  challengeUrl?: string;
+  dashboardUrl?: string | null;
 }
 
 /** Post proof to prs.md server for permanent badge hosting */

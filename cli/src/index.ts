@@ -10,6 +10,10 @@ import { registerProof } from "./proof.js";
 import { loadAuth, clearAuth, getDeviceCode } from "./auth.js";
 
 const PASS_THRESHOLD = 70;
+// Hit the canonical host directly — prs.md 307-redirects to www.prs.md,
+// and HTTP clients drop Authorization headers across redirects, which
+// silently broke CLI → account linking for both /api/cli/keys and /api/cli/proof.
+const API_BASE = process.env.PRS_API_URL ?? "https://www.prs.md";
 
 function printUsage(): void {
   console.log(`
@@ -200,7 +204,7 @@ async function main(): Promise<void> {
   // Fetch saved keys from prs.md when logged in and no key resolved yet
   if ((!provider || !apiKey) && storedAuth?.githubToken) {
     try {
-      const keysRes = await fetch("https://prs.md/api/cli/keys", {
+      const keysRes = await fetch(`${API_BASE}/api/cli/keys`, {
         headers: { Authorization: `Bearer ${storedAuth.githubToken}` },
       });
       if (keysRes.ok) {
@@ -252,28 +256,65 @@ async function main(): Promise<void> {
   console.log(`  ${c.neon("✓")} Provider: ${c.bold(provider)}`);
   console.log("");
 
-  // ── Fetch PR diff ────────────────────────────────────────
-  const fetchSpin = spinner(`Fetching ${parsed.owner}/${parsed.repo}#${parsed.pull}...`);
-  let pr;
-  try {
-    pr = await fetchPr(parsed.owner, parsed.repo, parsed.pull);
-    fetchSpin.stop(`${c.bold(pr.title)} ${c.dim(`(${pr.repoFullName}#${parsed.pull})`)}`);
-  } catch (err) {
-    fetchSpin.stop(c.red("Failed to fetch PR"));
-    console.error(`  ${c.red((err as Error).message)}`);
-    process.exit(1);
+  // ── Check for existing challenge (dedup) ────────────────
+  // If this user has already created a challenge for this PR, reuse its
+  // stored questions so every attempt on the same PR is directly comparable.
+  let existingChallengeId: string | undefined;
+  let prTitleResolved: string | undefined;
+  let prRepoResolved: string | undefined;
+  let questions;
+
+  if (storedAuth?.githubToken) {
+    try {
+      const lookupRes = await fetch(
+        `${API_BASE}/api/cli/challenge?prUrl=${encodeURIComponent(prUrl)}`,
+        { headers: { Authorization: `Bearer ${storedAuth.githubToken}` } },
+      );
+      if (lookupRes.ok) {
+        const existing = (await lookupRes.json()) as {
+          challengeId: string;
+          questions: typeof questions;
+          prTitle: string;
+          prRepo: string;
+        };
+        existingChallengeId = existing.challengeId;
+        questions = existing.questions;
+        prTitleResolved = existing.prTitle ?? undefined;
+        prRepoResolved = existing.prRepo ?? undefined;
+        console.log(`  ${c.dim("Existing challenge found — reusing questions")}`);
+        console.log(`  ${c.bold(prTitleResolved ?? prUrl)} ${c.dim(`(${prRepoResolved}#${parsed.pull})`)}`);
+        console.log("");
+      }
+    } catch {
+      // Server unreachable — fall through to fresh generation
+    }
   }
 
-  // ── Generate questions ───────────────────────────────────
-  const genSpin = spinner("Generating questions...");
-  let questions;
-  try {
-    questions = await generateQuestions(provider, apiKey, pr.diff);
-    genSpin.stop(`${questions.length} questions generated`);
-  } catch (err) {
-    genSpin.stop(c.red("Failed to generate questions"));
-    console.error(`  ${c.red((err as Error).message)}`);
-    process.exit(1);
+  // ── Fetch PR diff (skip if questions already loaded) ─────
+  let pr: { title: string; repoFullName: string; diff: string } | undefined;
+  if (!questions) {
+    const fetchSpin = spinner(`Fetching ${parsed.owner}/${parsed.repo}#${parsed.pull}...`);
+    try {
+      pr = await fetchPr(parsed.owner, parsed.repo, parsed.pull);
+      fetchSpin.stop(`${c.bold(pr.title)} ${c.dim(`(${pr.repoFullName}#${parsed.pull})`)}`);
+    } catch (err) {
+      fetchSpin.stop(c.red("Failed to fetch PR"));
+      console.error(`  ${c.red((err as Error).message)}`);
+      process.exit(1);
+    }
+  }
+
+  // ── Generate questions (skip if loaded from existing challenge) ──
+  if (!questions) {
+    const genSpin = spinner("Generating questions...");
+    try {
+      questions = await generateQuestions(provider, apiKey, pr!.diff);
+      genSpin.stop(`${questions.length} questions generated`);
+    } catch (err) {
+      genSpin.stop(c.red("Failed to generate questions"));
+      console.error(`  ${c.red((err as Error).message)}`);
+      process.exit(1);
+    }
   }
 
   // ── Run quiz ─────────────────────────────────────────────
@@ -314,8 +355,8 @@ async function main(): Promise<void> {
   console.log(
     certificate({
       username,
-      prRepo: pr.repoFullName,
-      prTitle: pr.title,
+      prRepo: prRepoResolved ?? pr!.repoFullName,
+      prTitle: prTitleResolved ?? pr!.title,
       totalScore,
       scores: gradeResult.scores,
       feedback: gradeResult.feedback,
@@ -324,24 +365,29 @@ async function main(): Promise<void> {
     }),
   );
 
-  if (!passed) {
+  // ── Register attempt on server ───────────────────────────
+  // Submit for authenticated users (pass or fail — dashboard tracks both)
+  // or anonymous users who passed (shareable proof). Skip anonymous failures:
+  // the server rejects them and there's nothing to link to anyway.
+  const shouldRegister = Boolean(storedAuth) || passed;
+
+  if (!shouldRegister) {
     console.log(`  ${c.red("Review the PR diff and try again to prove understanding.")}`);
-    if (!storedAuth) {
-      console.log(`  ${c.dim("Tip: run")} ${c.cyan("prs-md login")} ${c.dim("to link results to your dashboard.")}`);
-    }
+    console.log(`  ${c.dim("Tip: run")} ${c.cyan("prs-md login")} ${c.dim("to link results to your dashboard.")}`);
     console.log("");
     process.exit(1);
   }
 
-  // ── Register proof on server ─────────────────────────────
-  const regSpin = spinner("Registering proof on prs.md...");
+  const regSpin = spinner(
+    passed ? "Registering proof on prs.md..." : "Recording attempt on prs.md...",
+  );
   try {
     const proof = await registerProof({
       githubUsername: username,
       githubToken: storedAuth?.githubToken,
       prUrl,
-      prTitle: pr.title,
-      prRepo: pr.repoFullName,
+      prTitle: prTitleResolved ?? pr!.title,
+      prRepo: prRepoResolved ?? pr!.repoFullName,
       questions,
       answers,
       scores: gradeResult.scores,
@@ -349,19 +395,44 @@ async function main(): Promise<void> {
       passed,
       timeSpentSeconds,
       gradingFeedback: gradeResult.feedback,
+      challengeId: existingChallengeId,
     });
 
-    regSpin.stop(`Proof registered: ${c.underline(proof.proofUrl)}`);
+    if (passed) {
+      regSpin.stop(`Proof registered: ${c.underline(proof.proofUrl)}`);
+    } else {
+      regSpin.stop("Attempt recorded");
+    }
+    if (proof.challengeUrl && storedAuth) {
+      console.log(`  ${c.dim("Challenge:")} ${c.underline(proof.challengeUrl)}`);
+    }
+    if (proof.dashboardUrl) {
+      console.log(`  ${c.dim("Dashboard:")} ${c.underline(proof.dashboardUrl)}`);
+    }
     console.log("");
-    console.log(badgeBlock(proof.proofUrl));
+    if (passed) {
+      console.log(badgeBlock(proof.proofUrl));
+    }
     if (!storedAuth) {
       console.log(`  ${c.dim("Tip: run")} ${c.cyan("prs-md login")} ${c.dim("to link future results to your dashboard.")}`);
       console.log("");
     }
   } catch {
-    regSpin.stop(c.yellow("Could not register proof on prs.md (server unreachable)"));
+    regSpin.stop(
+      c.yellow(
+        passed
+          ? "Could not register proof on prs.md (server unreachable)"
+          : "Could not record attempt on prs.md (server unreachable)",
+      ),
+    );
     console.log("");
-    console.log(`  ${c.dim("Your results are shown above. The prs.md server may be down — try again later to get a shareable badge.")}`);
+    console.log(`  ${c.dim("Your results are shown above. The prs.md server may be down — try again later.")}`);
+  }
+
+  if (!passed) {
+    console.log(`  ${c.red("Review the PR diff and try again to prove understanding.")}`);
+    console.log("");
+    process.exit(1);
   }
 
   console.log("");

@@ -8,7 +8,16 @@
  * Set MIXPANEL_TOKEN in your environment (same value as NEXT_PUBLIC_MIXPANEL_TOKEN).
  */
 
-const MP_ENDPOINT = "https://api.mixpanel.com/track";
+// Mixpanel's track endpoint. EU-residency and India-residency projects must
+// send to api-eu.mixpanel.com / api-in.mixpanel.com — events sent to the wrong
+// region are accepted at the HTTP layer (status:1) but silently dropped.
+function getMpEndpoint(): string {
+  const host =
+    process.env.MIXPANEL_API_HOST ??
+    process.env.NEXT_PUBLIC_MIXPANEL_API_HOST ??
+    "https://api.mixpanel.com";
+  return `${host.replace(/\/$/, "")}/track`;
+}
 
 export type ServerEventProperties = Record<
   string,
@@ -47,7 +56,7 @@ export function trackServer(
 
   // Return the promise so callers can pass it to after() and ensure
   // Vercel keeps the function alive until the request completes.
-  return fetch(MP_ENDPOINT, {
+  return fetch(getMpEndpoint(), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

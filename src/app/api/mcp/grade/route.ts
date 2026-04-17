@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
     questions,
     answers,
     timeSpentSeconds,
+    challengeId: existingChallengeId,
   } = body as {
     prUrl: string;
     prTitle: string;
@@ -55,6 +56,7 @@ export async function POST(req: NextRequest) {
     questions: ChallengeQuestion[];
     answers: string[];
     timeSpentSeconds?: number;
+    challengeId?: string;
   };
 
   if (!prUrl || !questions || !answers) {
@@ -88,18 +90,23 @@ export async function POST(req: NextRequest) {
   );
   const passed = totalScore >= PASS_THRESHOLD;
 
-  // Save challenge + attempt
-  const challengeId = nanoid();
-  await db.insert(challenges).values({
-    id: challengeId,
-    creatorId: mcpUser.id,
-    prUrl,
-    prTitle,
-    prRepo,
-    questions,
-    status: "completed",
-    timeLimitSeconds: 180,
-  });
+  // Reuse existing challenge if provided, otherwise create a new one
+  let challengeId: string;
+  if (existingChallengeId) {
+    challengeId = existingChallengeId;
+  } else {
+    challengeId = nanoid();
+    await db.insert(challenges).values({
+      id: challengeId,
+      creatorId: mcpUser.id,
+      prUrl,
+      prTitle,
+      prRepo,
+      questions,
+      status: "completed",
+      timeLimitSeconds: 180,
+    });
+  }
 
   const attempt = await db
     .insert(attempts)

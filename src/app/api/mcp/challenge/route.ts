@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { resolveTokenUser } from "@/lib/mcp-auth";
 import { parsePrUrl, fetchPrDiff } from "@/lib/github";
 import { generateQuestions } from "@/lib/llm";
+import { db } from "@/db";
+import { challenges } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 
 /**
  * POST /api/mcp/challenge
@@ -49,6 +52,30 @@ export async function POST(req: NextRequest) {
       { error: "Invalid GitHub PR URL" },
       { status: 400 }
     );
+  }
+
+  // Return existing challenge if this user already has one for this PR
+  const existing = await db
+    .select({
+      id: challenges.id,
+      questions: challenges.questions,
+      prTitle: challenges.prTitle,
+      prRepo: challenges.prRepo,
+    })
+    .from(challenges)
+    .where(and(eq(challenges.creatorId, mcpUser.id), eq(challenges.prUrl, prUrl)))
+    .limit(1)
+    .then((rows) => rows[0]);
+
+  if (existing) {
+    return NextResponse.json({
+      challengeId: existing.id,
+      questions: existing.questions,
+      prTitle: existing.prTitle,
+      prRepo: existing.prRepo,
+      provider: mcpUser.aiKey.provider,
+      githubUsername: mcpUser.githubUsername,
+    });
   }
 
   // Fetch diff (public repos, no auth needed)

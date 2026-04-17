@@ -1,14 +1,20 @@
 import NextAuth, { type NextAuthResult } from "next-auth";
-import type { Adapter } from "next-auth/adapters";
+import type { Adapter, AdapterUser } from "next-auth/adapters";
 import GitHub from "next-auth/providers/github";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { accounts, sessions, users, verificationTokens } from "@/db/schema";
 import { encryptToken } from "@/lib/crypto";
 
 /**
- * Wrap an Auth.js adapter to encrypt OAuth access_token and refresh_token
- * at rest before they are written to the database.
+ * Wrap an Auth.js adapter to:
+ *   1. Encrypt OAuth access_token / refresh_token at rest before storage.
+ *   2. Reuse a pre-existing user when their githubUsername matches the
+ *      GitHub profile `login`. This avoids creating a duplicate user when
+ *      someone used the CLI before ever signing in to the web (the CLI
+ *      creates a users row but — on older submissions — may not have an
+ *      accounts row for NextAuth to match).
  *
  * Tokens are stored as JSON: { encrypted, iv, authTag }.
  * Use decryptToken() from src/lib/crypto.ts to read them back.
@@ -16,6 +22,27 @@ import { encryptToken } from "@/lib/crypto";
 function withEncryptedTokens(adapter: Adapter): Adapter {
   return {
     ...adapter,
+    async createUser(user) {
+      const login = (user as AdapterUser & { githubUsername?: string })
+        .githubUsername;
+      if (login) {
+        const db = getDb();
+        const existing = await db
+          .select()
+          .from(users)
+          .where(eq(users.githubUsername, login))
+          .then((rows) => rows[0]);
+        if (existing) {
+          return existing as AdapterUser;
+        }
+      }
+      // Strip our custom field before delegating — Drizzle will reject columns it doesn't know.
+      const { githubUsername: _unused, ...rest } = user as AdapterUser & {
+        githubUsername?: string;
+      };
+      void _unused;
+      return adapter.createUser!(rest);
+    },
     // Intercept linkAccount to encrypt tokens before the base adapter writes them
     linkAccount(account) {
       return adapter.linkAccount!({
@@ -50,6 +77,17 @@ function getInstance(): NextAuthResult {
           clientId: process.env.AUTH_GITHUB_ID,
           clientSecret: process.env.AUTH_GITHUB_SECRET,
           authorization: { params: { scope: "read:user user:email" } },
+          // Expose the GitHub login so our adapter's createUser wrapper can
+          // reuse an existing CLI-created user with the same githubUsername.
+          profile(profile) {
+            return {
+              id: profile.id.toString(),
+              name: profile.name ?? profile.login,
+              email: profile.email,
+              image: profile.avatar_url,
+              githubUsername: profile.login,
+            } as AdapterUser & { githubUsername: string };
+          },
         }),
       ],
       callbacks: {

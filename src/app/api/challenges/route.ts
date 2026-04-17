@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { apiKeys, challenges, accounts } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { decrypt, decryptToken } from "@/lib/crypto";
 import { parsePrUrl, fetchPrDiff } from "@/lib/github";
 import { generateQuestions } from "@/lib/llm";
@@ -31,6 +31,18 @@ export async function POST(req: NextRequest) {
       { error: "Invalid GitHub PR URL" },
       { status: 400 }
     );
+  }
+
+  // Return existing challenge if this user already has one for this PR
+  const existing = await db
+    .select({ id: challenges.id })
+    .from(challenges)
+    .where(and(eq(challenges.creatorId, session.user.id as string), eq(challenges.prUrl, prUrl)))
+    .limit(1)
+    .then((rows) => rows[0]);
+
+  if (existing) {
+    return NextResponse.json({ id: existing.id, success: true });
   }
 
   // Get user's API key (pick the first available)

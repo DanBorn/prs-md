@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
     scores,
     timeSpentSeconds,
     gradingFeedback,
+    challengeId: existingChallengeId,
   } = body as {
     githubToken?: string;
     prUrl: string;
@@ -56,6 +57,7 @@ export async function POST(req: NextRequest) {
     scores: number[];
     timeSpentSeconds: number;
     gradingFeedback: string[];
+    challengeId?: string;
   };
 
   if (!prUrl || !questions || !answers || !scores) {
@@ -106,13 +108,6 @@ export async function POST(req: NextRequest) {
   );
   const passed = totalScore >= PASS_THRESHOLD;
 
-  if (!passed) {
-    return NextResponse.json(
-      { error: "Only passing attempts can be registered as proofs" },
-      { status: 400 },
-    );
-  }
-
   // Verify GitHub identity if token provided
   let verifiedUsername: string | null = null;
   let verifiedGithubId: string | null = null;
@@ -134,6 +129,17 @@ export async function POST(req: NextRequest) {
     } catch {
       // Token verification failed — proceed as anonymous
     }
+  }
+
+  // Anonymous submissions must be passing — anon users have no dashboard,
+  // so a failed anon attempt creates a throwaway user row with nothing to
+  // link to. Authenticated failed attempts are allowed so they appear in
+  // the user's dashboard (matches the web flow).
+  if (!verifiedUsername && !passed) {
+    return NextResponse.json(
+      { error: "Anonymous attempts can only be registered when passing" },
+      { status: 400 },
+    );
   }
 
   // Find or create user
@@ -182,6 +188,21 @@ export async function POST(req: NextRequest) {
         .returning();
       user = inserted[0];
     }
+
+    // Ensure an accounts row exists linking this user to the GitHub identity.
+    // Without this, a later web sign-in via NextAuth creates a duplicate user
+    // (DrizzleAdapter.getUserByAccount returns null), orphaning CLI challenges.
+    if (verifiedGithubId) {
+      await db
+        .insert(accounts)
+        .values({
+          userId: user.id,
+          type: "oauth",
+          provider: "github",
+          providerAccountId: verifiedGithubId,
+        })
+        .onConflictDoNothing();
+    }
   } else {
     // Anonymous — create a throwaway anonymous user
     const anonId = `anon-${nanoid()}`;
@@ -195,19 +216,24 @@ export async function POST(req: NextRequest) {
     user = inserted[0];
   }
 
-  // Create challenge record
-  const challengeId = nanoid();
-  await db.insert(challenges).values({
-    id: challengeId,
-    creatorId: user.id,
-    prUrl,
-    prTitle,
-    prRepo,
-    questions,
-    status: "completed",
-    source: "cli",
-    timeLimitSeconds: 180,
-  });
+  // Reuse existing challenge if provided, otherwise create a new one.
+  // Status stays "active" so the challenge remains retryable from the web.
+  let challengeId: string;
+  if (existingChallengeId) {
+    challengeId = existingChallengeId;
+  } else {
+    challengeId = nanoid();
+    await db.insert(challenges).values({
+      id: challengeId,
+      creatorId: user.id,
+      prUrl,
+      prTitle,
+      prRepo,
+      questions,
+      source: "cli",
+      timeLimitSeconds: 180,
+    });
+  }
 
   // Create attempt record with server-computed scores
   const attempt = await db
@@ -247,5 +273,8 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     proofId,
     proofUrl: `${baseUrl}/proof/${proofId}`,
+    challengeId,
+    challengeUrl: `${baseUrl}/challenge/${challengeId}`,
+    dashboardUrl: verifiedUsername ? `${baseUrl}/dashboard` : null,
   });
 }

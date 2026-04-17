@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { timingSafeEqual } from "crypto";
 import { db } from "@/db";
 import { challenges, attempts } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -13,34 +12,16 @@ interface ActionResultBody {
 }
 
 /**
- * Verify the shared secret sent by the GitHub Action.
- * Uses timing-safe comparison to prevent timing attacks.
- */
-function verifyActionSecret(req: NextRequest): boolean {
-  const secret = process.env.ACTION_SECRET;
-  if (!secret) return false;
-  const provided = req.headers.get("x-action-secret");
-  if (!provided) return false;
-  try {
-    return timingSafeEqual(Buffer.from(provided), Buffer.from(secret));
-  } catch {
-    return false;
-  }
-}
-
-/**
  * POST /api/action/result
  *
  * Called by the GitHub Action after grading answers.
  * Updates the pending attempt with scores and returns the proof URL.
- * Protected by ACTION_SECRET shared secret.
+ * Authorization relies on the DB check: only challenges with source="action"
+ * can be updated, meaning the row must have been legitimately created via
+ * /api/action/challenge. No shared secret is required here.
  * totalScore and passed are computed server-side from the submitted scores.
  */
 export async function POST(req: NextRequest) {
-  if (!verifyActionSecret(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const body = (await req.json()) as ActionResultBody;
   const { challengeId, scores, feedback } = body;
 

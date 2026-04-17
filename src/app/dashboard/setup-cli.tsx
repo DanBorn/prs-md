@@ -36,24 +36,20 @@ export function SetupCli() {
           >
             2
           </span>
-          <span className="font-mono text-xs font-medium">Pick your AI provider</span>
+          <span className="font-mono text-xs font-medium">Provide an AI key</span>
         </div>
         <p className="text-xs mb-2 leading-relaxed" style={{ color: "var(--color-text-dim)" }}>
-          The CLI will prompt interactively, or set env vars to skip prompts:
+          If you&apos;ve saved an API key here on the dashboard, the CLI picks it up automatically after{" "}
+          <code className="text-[10px]">prs-md login</code> — no config needed. Otherwise, pass it
+          via flags or env vars:
         </p>
         <CodeBlock
-          code={`# OpenAI
-export PRS_PROVIDER=openai
-export PRS_API_KEY=sk-...
+          code={`# One-off override
+prs-md <pr-url> --provider anthropic --key sk-ant-...
 
-# Anthropic
-export PRS_PROVIDER=anthropic
-export PRS_API_KEY=sk-ant-...
-
-# Gemini
-export PRS_PROVIDER=gemini
-export PRS_API_KEY=AIza...`}
-          filename=".bashrc / .zshrc"
+# Persist in shell (all providers)
+export PRS_PROVIDER=openai   # openai | anthropic | gemini
+export PRS_API_KEY=sk-...`}
           language="bash"
         />
       </div>

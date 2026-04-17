@@ -13,9 +13,13 @@ let _mixpanel: MixpanelInstance | null = null;
 
 export async function initMixpanel(token: string): Promise<void> {
   const { default: mixpanel } = await import("mixpanel-browser");
+  // EU / India residency projects must override the api_host — events to the
+  // default US host are silently dropped even though the request returns 200.
+  const apiHost = process.env.NEXT_PUBLIC_MIXPANEL_API_HOST;
   mixpanel.init(token, {
     track_pageview: "url-with-path",
     persistence: "localStorage",
+    ...(apiHost ? { api_host: apiHost } : {}),
   });
   _mixpanel = mixpanel as unknown as MixpanelInstance;
 }

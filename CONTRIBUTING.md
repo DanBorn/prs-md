@@ -101,7 +101,6 @@ Key files to understand before making changes:
 - Any auth, encryption, or user-data code needs extra scrutiny — flag it in your PR description
 
 ### Known gaps that contributions are welcome for:
-- No IP-level rate limiting (per-attempt cap is in place, but `/api/cli/proof` flood protection via IP is not implemented)
 - GitHub OAuth tokens stored plaintext in the `accounts` table
 
 ## CI & Merging
