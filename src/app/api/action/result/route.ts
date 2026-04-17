@@ -39,6 +39,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  if (scores.length > 10) {
+    return NextResponse.json(
+      { error: "scores array exceeds maximum length" },
+      { status: 400 }
+    );
+  }
+
   // Clamp scores server-side — never trust caller arithmetic
   const clampedScores = scores.map((s) =>
     Math.max(0, Math.min(100, Math.round(Number(s) || 0)))
