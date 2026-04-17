@@ -271,8 +271,8 @@ export default function Home() {
             <div className="p-3 font-mono text-[11px] leading-relaxed space-y-1.5 sm:p-5 sm:text-xs sm:space-y-2">
               <p style={{ color: "var(--color-text-dim)" }}>
                 <span style={{ color: "var(--color-neon)" }}>$</span>{" "}
-                <span className="hidden sm:inline">prs verify https://github.com/acme/api/pull/247</span>
-                <span className="sm:hidden">prs verify .../acme/api/pull/247</span>
+                <span className="hidden sm:inline">prs-md https://github.com/acme/api/pull/247</span>
+                <span className="sm:hidden">prs-md .../acme/api/pull/247</span>
               </p>
               <p style={{ color: "var(--color-text-muted)" }}>
                 Fetching diff... <span style={{ color: "var(--color-neon)" }}>done</span>
@@ -435,7 +435,7 @@ export default function Home() {
                 }}
               >
                 <span style={{ color: "var(--color-neon)" }}>$</span>{" "}
-                <span style={{ color: "var(--color-text-muted)" }}>prs verify &lt;pr-url&gt;</span>
+                <span style={{ color: "var(--color-text-muted)" }}>prs-md &lt;pr-url&gt;</span>
               </div>
             </div>
 
