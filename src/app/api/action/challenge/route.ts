@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { nanoid } from "nanoid";
+import { actionChallengeLimiter, rateLimitEnabled } from "@/lib/rate-limit";
 import { db } from "@/db";
 import { challenges } from "@/db/schema";
 import type { ChallengeQuestion } from "@/db/schema";
@@ -45,6 +46,14 @@ async function verifyGitHubToken(token: string): Promise<boolean> {
  * access to server-side secrets.
  */
 export async function POST(req: NextRequest) {
+  if (rateLimitEnabled) {
+    const ip = req.headers.get("x-forwarded-for") ?? "unknown";
+    const { success } = await actionChallengeLimiter.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+  }
+
   const body = (await req.json()) as ActionChallengeBody;
 
   const { prUrl, prTitle, prRepo, sha, prNumber, questions, callbackToken } =
