@@ -105,7 +105,7 @@ See `.env.example`. Key split:
 - `AUTH_SECRET` — NextAuth secret (generate with `openssl rand -base64 32`)
 - `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` — GitHub OAuth App credentials
 - `ENCRYPTION_KEY` — 32-byte base64 key for AES-256-GCM API key encryption
-- `ACTION_SECRET` — shared secret for GitHub Action → `/api/action/challenge` authentication (timing-safe verified)
+- `ACTION_SECRET` — legacy shared secret, no longer used by the action endpoints (kept for backwards compat, can be removed)
 - `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` — IP-based rate limiting (optional; rate limiter is disabled without these)
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID` — Google Analytics 4 (optional)
 - `NEXT_PUBLIC_MIXPANEL_TOKEN` / `MIXPANEL_TOKEN` — Mixpanel client + server tokens (optional; same project token, kept separate so server token can rotate without a client rebuild)
@@ -135,7 +135,7 @@ npx drizzle-kit studio    # Browse data
 - Challenge pages and proof pages are intentionally public (shareable)
 - **Prompt injection hardening**: Untrusted content (diffs, answers) wrapped in XML tags (`<diff>`, `<answer>`) with explicit anti-injection instructions in system prompts; Gemini uses `systemInstruction` field to prevent concatenation attacks
 - **Server-side score validation**: All LLM scores clamped to [0,100] and re-computed on `/api/cli/proof` to prevent tampering
-- **ACTION_SECRET auth**: GitHub Action → `/api/action/challenge` calls verified with timing-safe comparison; `/api/action/result` relies on the DB constraint that only `source="action"` challenges can be updated (no shared secret needed — the row must have been legitimately created by the challenge endpoint)
+- **GitHub PAT validation**: `/api/action/challenge` verifies the `callbackToken` against `GET https://api.github.com/user` — any real GitHub PAT is accepted, so the action is self-service for any user. `/api/action/result` relies on the DB constraint that only `source="action"` challenges can be updated.
 - **SSRF-safe URL parsing**: PR URL parsing uses `URL()` constructor + hostname allowlist (no unanchored regex)
 - **Security headers**: X-Frame-Options, HSTS, X-Content-Type-Options, etc. configured in `next.config.ts`
 - **IP-based rate limiting**: Upstash Redis sliding-window rate limiter on all public API endpoints (`src/lib/rate-limit.ts`); gracefully disabled when Upstash credentials are absent

@@ -9,7 +9,6 @@
 #   PRS_CALLBACK_TOKEN   — GitHub fine-grained PAT (contents:write on this repo)
 #                          Needed so prs.md can trigger the grading workflow
 #                          after the quiz is submitted.
-#   PRS_ACTION_SECRET    — Must match ACTION_SECRET set in your prs.md deployment
 #
 # How to create PRS_CALLBACK_TOKEN:
 #   1. Go to github.com/settings/personal-access-tokens/new
@@ -45,5 +44,4 @@ jobs:
           prs-api-key: ${{ secrets.PRS_API_KEY }}
           prs-provider: ${{ secrets.PRS_PROVIDER }}
           prs-callback-token: ${{ secrets.PRS_CALLBACK_TOKEN }}
-          prs-action-secret: ${{ secrets.PRS_ACTION_SECRET }}
           # prs-server-url: https://prs.md  # default

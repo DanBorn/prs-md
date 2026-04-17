@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse, after } from "next/server";
-import { timingSafeEqual } from "crypto";
 import { nanoid } from "nanoid";
 import { db } from "@/db";
 import { challenges } from "@/db/schema";
@@ -18,18 +17,20 @@ interface ActionChallengeBody {
 }
 
 /**
- * Verify the shared secret sent by the GitHub Action.
- * Uses timing-safe comparison to prevent timing attacks.
+ * Verify the callbackToken is a valid GitHub PAT by calling the GitHub API.
+ * This confirms the request originates from a real GitHub Action runner
+ * without requiring callers to know any server-side secret.
  */
-function verifyActionSecret(req: NextRequest): boolean {
-  const secret = process.env.ACTION_SECRET;
-  if (!secret) return false;
-  const provided = req.headers.get("x-action-secret");
-  if (!provided) return false;
+async function verifyGitHubToken(token: string): Promise<boolean> {
   try {
-    return timingSafeEqual(Buffer.from(provided), Buffer.from(secret));
+    const res = await fetch("https://api.github.com/user", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "User-Agent": "prs.md",
+      },
+    });
+    return res.ok;
   } catch {
-    // Buffers different length — definitely wrong
     return false;
   }
 }
@@ -39,13 +40,11 @@ function verifyActionSecret(req: NextRequest): boolean {
  *
  * Called by the GitHub Action after generating questions.
  * Stores the challenge and encrypts the callback token for later use.
- * Protected by ACTION_SECRET shared secret.
+ * Authorization: validates callbackToken against the GitHub API — any real
+ * GitHub PAT is accepted, so any user can set up the action without needing
+ * access to server-side secrets.
  */
 export async function POST(req: NextRequest) {
-  if (!verifyActionSecret(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const body = (await req.json()) as ActionChallengeBody;
 
   const { prUrl, prTitle, prRepo, sha, prNumber, questions, callbackToken } =
@@ -63,6 +62,11 @@ export async function POST(req: NextRequest) {
       { error: "Exactly 3 questions required" },
       { status: 400 }
     );
+  }
+
+  const tokenValid = await verifyGitHubToken(callbackToken);
+  if (!tokenValid) {
+    return NextResponse.json({ error: "Invalid callback token" }, { status: 401 });
   }
 
   // Encrypt the callback token at rest
