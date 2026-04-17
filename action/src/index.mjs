@@ -163,9 +163,11 @@ async function handleDispatch() {
   });
 
   let proofUrl = null;
+  let attemptId = null;
   if (res.ok) {
     const data = await res.json();
     proofUrl = data.proofUrl;
+    attemptId = data.attemptId;
   } else {
     console.error(
       `Warning: failed to post results to prs.md: ${res.status}`
@@ -190,8 +192,8 @@ async function handleDispatch() {
   // Post result comment on PR
   const user = quizUserGithub ? `@${quizUserGithub}` : "The quiz taker";
   const emoji = passed ? "white_check_mark" : "x";
-  const badge = passed && proofUrl
-    ? `\n\n[![PRs.md verified](https://img.shields.io/badge/PRs.md-verified-brightgreen)](${proofUrl})`
+  const badge = passed && proofUrl && attemptId
+    ? `\n\n[![PRs.md verified](${PRS_SERVER_URL}/api/badge/${attemptId})](${proofUrl})`
     : "";
 
   const comment = [
