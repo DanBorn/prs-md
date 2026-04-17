@@ -18,12 +18,38 @@ export default async function DashboardPage() {
     .from(apiKeys)
     .where(eq(apiKeys.userId, session.user.id));
 
-  const userChallenges = await db
+  // Challenges the user created
+  const createdChallenges = await db
     .select()
     .from(challenges)
     .where(eq(challenges.creatorId, session.user.id))
     .orderBy(desc(challenges.createdAt))
     .limit(20);
+
+  // Challenge IDs where the user has attempted (covers action/CLI/MCP challenges
+  // where creatorId is null but the user took the quiz)
+  const userAttemptedIds = await db
+    .selectDistinct({ challengeId: attempts.challengeId })
+    .from(attempts)
+    .where(eq(attempts.userId, session.user.id))
+    .then((rows) => rows.map((r) => r.challengeId));
+
+  const attemptedNotCreated = userAttemptedIds.filter(
+    (id) => !createdChallenges.some((c) => c.id === id)
+  );
+
+  const attemptedChallenges =
+    attemptedNotCreated.length > 0
+      ? await db
+          .select()
+          .from(challenges)
+          .where(inArray(challenges.id, attemptedNotCreated))
+          .orderBy(desc(challenges.createdAt))
+      : [];
+
+  const userChallenges = [...createdChallenges, ...attemptedChallenges].sort(
+    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+  ).slice(0, 20);
 
   // Fetch the user's best attempt per challenge (prefer passed over failed)
   const challengeIds = userChallenges.map((c) => c.id);
