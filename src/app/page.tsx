@@ -634,7 +634,7 @@ export default function Home() {
               <strong style={{ color: "var(--color-text)" }}>Public repos only.</strong>{" "}
               PRs.md currently works with public GitHub repositories. Even though you bring your own
               LLM key, the questions and answers we generate are stored on our servers to power the
-              proof page — so private code would be exposed. Private repo support is on the roadmap.
+              proof page — so private code would be exposed.
             </p>
           </div>
         </div>

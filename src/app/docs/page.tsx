@@ -49,7 +49,7 @@ export default function DocsPage() {
         <span style={{ color: "var(--color-text-muted)" }}>
           Even with BYOK, the questions and answers we generate are stored on our servers to power
           the proof page. Submitting a private repo would expose its code through those stored
-          records. Private repo support is on the roadmap.
+          records.
         </span>
       </div>
 
