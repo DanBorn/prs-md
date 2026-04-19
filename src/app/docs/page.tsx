@@ -81,7 +81,7 @@ export default function DocsPage() {
       <p>
         Paste any public GitHub PR URL into the input on the Challenges tab and hit{" "}
         <strong>Generate</strong>. PRs.md fetches the diff, sends it to your chosen LLM, and returns
-        three targeted questions plus one hallucination trap.
+        three targeted questions — one of which is a hallucination trap.
       </p>
       <p>
         The quiz is timed at <strong>three minutes</strong>. When the timer starts, copy-paste is

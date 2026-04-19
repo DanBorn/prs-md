@@ -57,7 +57,7 @@ export default function ActionDocsPage() {
 
       <h2>How it works</h2>
       <ol>
-        <li><strong>PR opened or updated</strong> — the action fetches the diff and generates 3 targeted questions plus 1 hallucination trap.</li>
+        <li><strong>PR opened or updated</strong> — the action fetches the diff and generates 3 targeted questions, one of which is a hallucination trap.</li>
         <li><strong>Quiz link posted</strong> as a PR comment; commit status set to pending.</li>
         <li><strong>PR author takes the timed quiz</strong> on prs.md (3 minutes, no copy-paste).</li>
         <li><strong>Action grades answers</strong> and updates the commit status to pass or fail.</li>

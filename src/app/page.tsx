@@ -331,7 +331,7 @@ export default function Home() {
               {
                 num: "02",
                 title: "Questions generated",
-                desc: "Your LLM reads the diff and writes 3 targeted questions — plus a trap.",
+                desc: "Your LLM reads the diff and writes 3 targeted questions — one of which is a trap.",
               },
               {
                 num: "03",

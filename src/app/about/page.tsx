@@ -142,7 +142,7 @@ export default function AboutPage() {
               {
                 step: "02",
                 title: "Question generation",
-                body: "The diff is sent to your chosen LLM (OpenAI, Anthropic, or Gemini) with a structured prompt asking it to produce three specific, diff-grounded questions plus one hallucination trap — a question about something that doesn't exist in the PR. Your API key is used; we receive nothing.",
+                body: "The diff is sent to your chosen LLM (OpenAI, Anthropic, or Gemini) with a structured prompt asking it to produce three specific, diff-grounded questions — one of which is a hallucination trap, a question about something that doesn't exist in the PR. Your API key is used; we receive nothing.",
               },
               {
                 step: "03",
