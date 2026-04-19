@@ -8,6 +8,7 @@ const NAV = [
   { href: "/docs/web", label: "Web Dashboard", icon: "WEB", group: "Guides" },
   { href: "/docs/cli", label: "CLI", icon: ">_" },
   { href: "/docs/mcp", label: "MCP / IDE", icon: "MCP" },
+  { href: "/docs/action", label: "GitHub Action", icon: "⚙" },
 ];
 
 export function DocsSidebar() {

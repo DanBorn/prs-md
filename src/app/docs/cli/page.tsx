@@ -112,8 +112,8 @@ PRS_PROVIDER=openai PRS_API_KEY=sk-... prs-md https://github.com/owner/repo/pull
         <strong>GitHub Action alternative:</strong>{" "}
         <span style={{ color: "var(--color-text-muted)" }}>
           For tighter GitHub integration — automatic PR comments and commit status checks — use the{" "}
-          <strong>GitHub Action</strong> from your dashboard. It runs server-side using your saved
-          key and posts results directly to the PR thread without any local setup.
+          <a href="/docs/action"><strong>GitHub Action</strong></a>. It runs server-side and posts
+          results directly to the PR thread without any local setup. No prs.md account required.
         </span>
       </div>
     </div>

@@ -244,6 +244,8 @@ export default function Home() {
             <span style={{ color: "var(--color-text-muted)" }}>CLI</span>
             <span className="mx-2">&middot;</span>
             <span style={{ color: "var(--color-text-muted)" }}>MCP&thinsp;/&thinsp;IDE</span>
+            <span className="mx-2">&middot;</span>
+            <span style={{ color: "var(--color-text-muted)" }}>GitHub&thinsp;Action</span>
           </p>
 
           {/* Terminal preview */}
@@ -377,7 +379,7 @@ export default function Home() {
           </p>
 
           {/* Horizontal scroll on mobile, grid on sm+ */}
-          <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0">
+          <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4">
             {/* Web */}
             <div
               className="flex w-[280px] shrink-0 flex-col rounded-xl border p-5 snap-start sm:w-auto sm:p-6"
@@ -467,6 +469,37 @@ export default function Home() {
               >
                 <span style={{ color: "var(--color-accent)" }}>tool:</span>{" "}
                 <span style={{ color: "var(--color-text-muted)" }}>prs_start_challenge</span>
+              </div>
+            </div>
+
+            {/* GitHub Action */}
+            <div
+              className="flex w-[280px] shrink-0 flex-col rounded-xl border p-5 snap-start sm:w-auto sm:p-6"
+              style={{
+                borderColor: "var(--color-border)",
+                background: "var(--color-surface)",
+              }}
+            >
+              <div
+                className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg font-mono text-sm font-black sm:mb-4 sm:h-10 sm:w-10"
+                style={{ background: "var(--color-neon-glow)", color: "var(--color-neon)" }}
+              >
+                ⚙
+              </div>
+              <h3 className="text-sm font-bold mb-1.5 sm:mb-2">GitHub Action</h3>
+              <p className="text-[11px] leading-relaxed flex-1 sm:text-xs" style={{ color: "var(--color-text-muted)" }}>
+                Automatic Turing Test on every PR. Questions posted as a comment, commit status updated after grading. No account needed.
+              </p>
+              <div
+                className="mt-3 rounded-lg border px-3 py-2 font-mono text-[10px] sm:mt-4"
+                style={{
+                  borderColor: "var(--color-border-subtle)",
+                  background: "var(--color-surface-raised)",
+                  color: "var(--color-text-dim)",
+                }}
+              >
+                <span style={{ color: "var(--color-neon)" }}>uses:</span>{" "}
+                <span style={{ color: "var(--color-text-muted)" }}>prs-md/action@v1</span>
               </div>
             </div>
           </div>

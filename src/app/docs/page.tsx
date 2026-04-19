@@ -86,7 +86,7 @@ export default function DocsPage() {
       <hr />
 
       <h2>Choose your workflow</h2>
-      <div className="grid gap-3 sm:grid-cols-3 not-prose" style={{ marginTop: "1rem" }}>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 not-prose" style={{ marginTop: "1rem" }}>
         {[
           {
             href: "/docs/web",
@@ -99,7 +99,6 @@ export default function DocsPage() {
             icon: ">_",
             label: "CLI",
             desc: "One command. Wire it into scripts or CI.",
-            accent: false,
           },
           {
             href: "/docs/mcp",
@@ -107,6 +106,12 @@ export default function DocsPage() {
             label: "MCP / IDE",
             desc: "Trigger challenges without leaving Cursor or Windsurf.",
             accent: true,
+          },
+          {
+            href: "/docs/action",
+            icon: "⚙",
+            label: "GitHub Action",
+            desc: "Automatic Turing Test on every PR — no account needed.",
           },
         ].map((item) => (
           <Link
