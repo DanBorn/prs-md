@@ -55,9 +55,9 @@ export default async function Image({
       .then((rows) => rows[0]),
   ]);
 
-  const username = user?.githubUsername
+  const username = user?.githubUsername && !user.githubUsername.startsWith("anon-")
     ? `@${user.githubUsername}`
-    : (user?.name ?? "Anonymous");
+    : "Someone";
   const score = attempt.totalScore ?? 0;
   const prTitle = challenge?.prTitle ?? "Pull Request";
   const prRepo = challenge?.prRepo ?? "";

@@ -425,10 +425,18 @@ server.tool(
 
         activeChallenges.delete(challenge_id);
 
+        // Only show feedback on pass — on failure the feedback reveals expected answers,
+        // which lets anyone harvest them from a throwaway attempt and resubmit.
         const scoreLines = result.scores
-          .map((s, i) => `- Q${i + 1}: ${s}% ${s >= 70 ? "✓" : "✗"} — ${result.feedback[i]}`)
+          .map((s, i) => {
+            const icon = s >= 70 ? "✓" : "✗";
+            return result.passed
+              ? `- Q${i + 1}: ${s}% ${icon} — ${result.feedback[i]}`
+              : `- Q${i + 1}: ${s}% ${icon}`;
+          })
           .join("\n");
 
+        const retryLine = result.passed ? "" : "\n\nStart a new challenge to try again with different questions.";
         const badge = result.proofUrl
           ? `\n## Badge\n\nAdd this to your PR description:\n\n\`\`\`markdown\n[![prs.md — 100% Human Verified](https://img.shields.io/badge/prs.md-100%25_Human_Verified-00e676?style=flat-square)](${result.proofUrl})\n\`\`\`\n\nProof: ${result.proofUrl}`
           : "";
@@ -440,7 +448,7 @@ server.tool(
         return {
           content: [{
             type: "text" as const,
-            text: `# ${statusEmoji} ${statusText} — ${result.totalScore}%\n\n**PR:** ${challenge.prTitle} (${challenge.prRepo})${userLine}\n**Time:** ${Math.floor(timeSpent / 60)}m ${timeSpent % 60}s\n\n## Scores\n\n${scoreLines}${badge}`,
+            text: `# ${statusEmoji} ${statusText} — ${result.totalScore}%\n\n**PR:** ${challenge.prTitle} (${challenge.prRepo})${userLine}\n**Time:** ${Math.floor(timeSpent / 60)}m ${timeSpent % 60}s\n\n## Scores\n\n${scoreLines}${retryLine}${badge}`,
           }],
         };
       } catch (err) {
@@ -517,10 +525,18 @@ server.tool(
 
     activeChallenges.delete(challenge_id);
 
+    // Only show feedback on pass — on failure the feedback reveals expected answers,
+    // which lets anyone harvest them from a throwaway attempt and resubmit.
     const scoreLines = scores
-      .map((s, i) => `- Q${i + 1}: ${s}% ${s >= 70 ? "✓" : "✗"} — ${gradingFeedback[i]}`)
+      .map((s, i) => {
+        const icon = s >= 70 ? "✓" : "✗";
+        return passed
+          ? `- Q${i + 1}: ${s}% ${icon} — ${gradingFeedback[i]}`
+          : `- Q${i + 1}: ${s}% ${icon}`;
+      })
       .join("\n");
 
+    const retryLine = passed ? "" : "\n\nStart a new challenge to try again with different questions.";
     const badge = proofUrl
       ? `\n## Badge\n\nAdd this to your PR description:\n\n\`\`\`markdown\n[![prs.md — 100% Human Verified](https://img.shields.io/badge/prs.md-100%25_Human_Verified-00e676?style=flat-square)](${proofUrl})\n\`\`\`\n\nProof: ${proofUrl}`
       : "";
@@ -532,7 +548,7 @@ server.tool(
     return {
       content: [{
         type: "text" as const,
-        text: `# ${statusEmoji} ${statusText} — ${totalScore}%\n\n**PR:** ${challenge.prTitle} (${challenge.prRepo})${userLine}\n**Time:** ${Math.floor(timeSpent / 60)}m ${timeSpent % 60}s\n\n## Scores\n\n${scoreLines}${badge}`,
+        text: `# ${statusEmoji} ${statusText} — ${totalScore}%\n\n**PR:** ${challenge.prTitle} (${challenge.prRepo})${userLine}\n**Time:** ${Math.floor(timeSpent / 60)}m ${timeSpent % 60}s\n\n## Scores\n\n${scoreLines}${retryLine}${badge}`,
       }],
     };
   },

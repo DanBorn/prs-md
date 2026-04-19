@@ -34,9 +34,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         .where(eq(users.id, attempt.userId))
         .then((rows) => rows[0])
     : null;
-  const handle = username?.githubUsername
+  const isAnon = username?.githubUsername?.startsWith("anon-") ?? false;
+  const handle = !isAnon && username?.githubUsername
     ? `@${username.githubUsername}`
-    : (username?.name ?? "A developer");
+    : "A developer";
 
   const challenge = await db
     .select({ prTitle: challenges.prTitle, prRepo: challenges.prRepo })
@@ -162,9 +163,9 @@ export default async function ProofPage({ params }: Props) {
               )}
               <div>
                 <p className="font-bold text-lg">
-                  {user?.githubUsername
+                  {user?.githubUsername && !user.githubUsername.startsWith("anon-")
                     ? `@${user.githubUsername}`
-                    : user?.name ?? "Anonymous"}
+                    : "Someone"}
                 </p>
                 <p className="font-mono text-[11px]" style={{ color: "var(--color-text-dim)" }}>
                   Verified {new Date(attempt.createdAt).toLocaleDateString("en-US", {

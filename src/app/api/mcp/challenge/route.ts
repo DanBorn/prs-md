@@ -3,8 +3,8 @@ import { resolveTokenUser } from "@/lib/mcp-auth";
 import { parsePrUrl, fetchPrDiff } from "@/lib/github";
 import { generateQuestions } from "@/lib/llm";
 import { db } from "@/db";
-import { challenges } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { challenges, attempts } from "@/db/schema";
+import { eq, and, notExists } from "drizzle-orm";
 
 /**
  * POST /api/mcp/challenge
@@ -54,7 +54,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Return existing challenge if this user already has one for this PR
+  // Return existing challenge only if it has never been attempted.
+  // Once attempted (pass or fail), the user has seen the questions and feedback
+  // could reveal expected answers — always generate fresh questions on retry.
   const existing = await db
     .select({
       id: challenges.id,
@@ -63,7 +65,18 @@ export async function POST(req: NextRequest) {
       prRepo: challenges.prRepo,
     })
     .from(challenges)
-    .where(and(eq(challenges.creatorId, mcpUser.id), eq(challenges.prUrl, prUrl)))
+    .where(
+      and(
+        eq(challenges.creatorId, mcpUser.id),
+        eq(challenges.prUrl, prUrl),
+        notExists(
+          db
+            .select({ id: attempts.id })
+            .from(attempts)
+            .where(eq(attempts.challengeId, challenges.id))
+        )
+      )
+    )
     .limit(1)
     .then((rows) => rows[0]);
 

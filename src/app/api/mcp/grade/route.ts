@@ -144,11 +144,17 @@ export async function POST(req: NextRequest) {
   const baseUrl = process.env.NEXTAUTH_URL ?? "https://prs.md";
   const proofUrl = passed ? `${baseUrl}/proof/${attempt[0].id}` : null;
 
+  // Only return detailed feedback on a pass — on failure, revealing the expected
+  // answers lets anyone harvest them from a throwaway attempt and resubmit.
+  const responseFeedback = passed
+    ? gradeResult.feedback
+    : gradeResult.feedback.map(() => "Review the diff and try a new challenge");
+
   return NextResponse.json({
     scores: gradeResult.scores,
     totalScore,
     passed,
-    feedback: gradeResult.feedback,
+    feedback: responseFeedback,
     proofUrl,
     githubUsername: mcpUser.githubUsername,
   });
