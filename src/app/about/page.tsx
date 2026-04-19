@@ -137,7 +137,7 @@ export default function AboutPage() {
               {
                 step: "01",
                 title: "Diff fetch",
-                body: "PRs.md calls the GitHub API to pull the raw diff for your PR. We request no repo permissions — the diff is fetched as the public API allows. Private repos require the PR to be readable with a token you own.",
+                body: "PRs.md calls the GitHub API to pull the raw diff for your PR. We request no repo permissions — the diff is fetched via the public API. Only public repositories are supported: even with BYOK, the generated questions and answers are stored on our servers to power the proof page, so private code would be exposed through those records.",
               },
               {
                 step: "02",

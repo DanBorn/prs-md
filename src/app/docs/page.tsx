@@ -35,11 +35,23 @@ export default function DocsPage() {
       <ul>
         <li>A GitHub account — used for sign-in only (read:user scope)</li>
         <li>An API key from <strong>OpenAI</strong>, <strong>Anthropic</strong>, or <strong>Google Gemini</strong></li>
+        <li>A <strong>public</strong> GitHub pull request — private repos are not currently supported</li>
       </ul>
       <p>
         PRs.md is <strong>bring-your-own-key</strong>. We never proxy your requests through our own
         credits — your key talks directly to the provider.
       </p>
+      <div
+        className="docs-callout"
+        style={{ borderColor: "oklch(78% 0.16 70 / 0.25)", background: "oklch(78% 0.16 70 / 0.04)" }}
+      >
+        <strong style={{ color: "var(--color-warning)" }}>Public repos only.</strong>{" "}
+        <span style={{ color: "var(--color-text-muted)" }}>
+          Even with BYOK, the questions and answers we generate are stored on our servers to power
+          the proof page. Submitting a private repo would expose its code through those stored
+          records. Private repo support is on the roadmap.
+        </span>
+      </div>
 
       <h2>Step 1 — Sign in</h2>
       <p>

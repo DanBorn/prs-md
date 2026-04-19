@@ -56,7 +56,8 @@ export function ChallengeCreator() {
         <h2 className="text-base font-bold">Create a Challenge</h2>
       </div>
       <p className="text-xs mb-4" style={{ color: "var(--color-text-muted)" }}>
-        Paste a public GitHub PR URL. We&apos;ll analyze the diff and generate 3 targeted questions.
+        Paste a <strong>public</strong> GitHub PR URL. We&apos;ll analyze the diff and generate 3 targeted questions.
+        Private repos are not supported — questions and answers are stored on our servers.
       </p>
 
       <div className="flex flex-col gap-2 sm:flex-row">

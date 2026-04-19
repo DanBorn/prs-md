@@ -615,6 +615,28 @@ export default function Home() {
               </div>
             ))}
           </div>
+
+          {/* Public-repo limitation note */}
+          <div
+            className="mt-6 flex items-start gap-3 rounded-xl border px-4 py-3 text-left sm:mt-8"
+            style={{
+              borderColor: "oklch(78% 0.16 70 / 0.25)",
+              background: "oklch(78% 0.16 70 / 0.04)",
+            }}
+          >
+            <span
+              className="mt-0.5 shrink-0 font-mono text-[10px] font-black"
+              style={{ color: "var(--color-warning)" }}
+            >
+              !
+            </span>
+            <p className="text-[11px] leading-relaxed sm:text-xs" style={{ color: "var(--color-text-muted)" }}>
+              <strong style={{ color: "var(--color-text)" }}>Public repos only.</strong>{" "}
+              PRs.md currently works with public GitHub repositories. Even though you bring your own
+              LLM key, the questions and answers we generate are stored on our servers to power the
+              proof page — so private code would be exposed. Private repo support is on the roadmap.
+            </p>
+          </div>
         </div>
       </section>
 
