@@ -21,7 +21,7 @@
     ]
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.88.0",
+    "@anthropic-ai/sdk": "^0.91.1",
     "@auth/drizzle-adapter": "^1.11.1",
     "@google/generative-ai": "^0.24.1",
     "@neondatabase/serverless": "^1.0.2",
