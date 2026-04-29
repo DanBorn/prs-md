@@ -6,8 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Logo } from "./logo";
 
-// Replace with real Stripe payment link once generated
-const DONATE_URL = "#donate";
+const DONATE_URL = "https://github.com/sponsors/DanBorn";
+const GITHUB_URL = "https://github.com/DanBorn/prs-md";
 
 export function Header() {
   const { data: session } = useSession();
@@ -142,6 +142,14 @@ export function Header() {
                 docs
               </Link>
               <a
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-link rounded-md px-3 py-1.5 font-mono text-xs font-medium transition-colors"
+              >
+                GitHub &#8599;
+              </a>
+              <a
                 href={DONATE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -261,6 +269,9 @@ export function Header() {
                 </MobileNavLink>
                 <MobileNavLink href="/docs" onClick={closeMobile}>
                   docs
+                </MobileNavLink>
+                <MobileNavLink href={GITHUB_URL} onClick={closeMobile} external>
+                  GitHub &#8599;
                 </MobileNavLink>
                 <MobileNavLink
                   href={DONATE_URL}

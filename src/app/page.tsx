@@ -219,12 +219,21 @@ export default function Home() {
               <span className="ml-2 inline-block transition-transform group-hover:translate-x-0.5">&rarr;</span>
             </button>
             {!session?.user && (
-              <button
-                onClick={handleSignIn}
-                className="btn-outline w-full rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all sm:w-auto"
-              >
-                Sign in
-              </button>
+              <>
+                <button
+                  onClick={handleSignIn}
+                  className="btn-outline w-full rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all sm:w-auto"
+                >
+                  Sign in
+                </button>
+                <a
+                  href="#how-it-works"
+                  className="w-full rounded-lg px-8 py-3.5 font-mono text-sm font-medium transition-all sm:w-auto"
+                  style={{ color: "var(--color-text-dim)" }}
+                >
+                  How it works &darr;
+                </a>
+              </>
             )}
             {session?.user && (
               <a

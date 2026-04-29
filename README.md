@@ -4,15 +4,16 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org)
 [![CI](https://github.com/DanBorn/prs-md/actions/workflows/ci.yml/badge.svg)](https://github.com/DanBorn/prs-md/actions/workflows/ci.yml)
 [![Vercel](https://img.shields.io/badge/deploy-Vercel-black)](https://vercel.com)
+[![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-pink?logo=github)](https://github.com/sponsors/DanBorn)
 
 A "Turing Test for Pull Requests." Paste a GitHub PR URL, answer 3 targeted questions about the diff under a 3-minute timer, and earn a shareable proof badge. Stops unread AI-generated PRs from landing.
 
-**Live demo:** coming soon — self-host in minutes with the guide below.
+**Live:** [prs.md](https://prs.md) — or self-host in minutes with the guide below.
 
 ## How it works
 
 1. Paste a GitHub PR URL
-2. An LLM (your own API key) reads the diff and generates 3 targeted questions + 1 hallucination trap
+2. An LLM (your own API key) reads the diff and generates 3 targeted questions, one of which is a hallucination trap
 3. Answer under a 3-minute timer
 4. LLM grades your answers — pass and get a shareable proof badge + public proof page
 
@@ -31,8 +32,8 @@ No hosted AI cost to the operator. Users bring their own key (OpenAI, Anthropic,
 ## Quick Start
 
 ```bash
-git clone https://github.com/your-org/prs-cert.git
-cd prs-cert
+git clone https://github.com/DanBorn/prs-md.git
+cd prs-md
 cp .env.example .env
 # Edit .env with your values (see Configuration below)
 pnpm install
@@ -109,7 +110,7 @@ npx drizzle-kit studio  # Open Drizzle Studio (DB browser)
 The `prs-md` CLI lets developers verify a PR directly from the terminal.
 
 ```bash
-npx prs-md verify https://github.com/org/repo/pull/123
+npx prs-md https://github.com/org/repo/pull/123
 ```
 
 See [`cli/`](cli/) for source and build instructions.
